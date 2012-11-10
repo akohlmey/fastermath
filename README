@@ -1,0 +1,16 @@
+mathwrap
+========
+
+A shared library wrapper for 32-bit and 64-bit x86 Linux systems
+to redirect calls to math functions from the system libm to bundled
+SSE or AVX optimized versions or from external math libraries.
+
+Installation
+============
+This packages is Linux specific and requires the
+following tools to be installed:
+- GNU make
+- GCC C-compiler
+- AMD LibM (optional, tested with v3.0)
+- Intel SVML (optional, tested with the version bundled with icc 11.1) 
+
