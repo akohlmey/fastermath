@@ -7,10 +7,19 @@ SSE or AVX optimized versions or from external math libraries.
 
 Installation
 ============
-This packages is Linux specific and requires the
-following tools to be installed:
+
+This packages is Linux x86 specific and requires the following tools
+to be installed:
 - GNU make
-- GCC C-compiler
+- GNU C-compiler (tested with 4.5.1)
 - AMD LibM (optional, tested with v3.0)
 - Intel SVML (optional, tested with the version bundled with icc 11.1) 
+
+To compile simply type "make". This should produce two
+libraries libmathwrap.so and libmathwrap.a.
+
+Usage
+=====
+
+
 
