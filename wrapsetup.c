@@ -21,11 +21,14 @@ static struct _callstats
 {
     int log_hi;   /**< log() call counter; high 30 bits */
     int log_lo;   /**< log() call counter; low 30 bits  */
+    int exp_hi;   /**< exp() call counter; high 30 bits */
+    int exp_lo;   /**< exp() call counter; low 30 bits  */
     int pow_hi;   /**< pow() call counter; high 30 bits */
     int pow_lo;   /**< pow() call counter; low 30 bits  */
 } callstats;
 
 /* function pointers for the selected math function */
+static double (*my_exp)(double) = NULL;
 static double (*my_log)(double) = NULL;
 static double (*my_pow)(double,double) = NULL;
 
@@ -58,12 +61,16 @@ void _mathwrap_init(void)
 
     math_handle = dlopen("libamdlibm.so",RTLD_NOW);
     if (math_handle != NULL) {
+        fputs("Redirecting exp() to AMD libM version\n", stderr);
+        my_exp = dlsym(math_handle,"amd_exp");
         fputs("Redirecting log() to AMD libM version\n", stderr);
         my_log = dlsym(math_handle,"amd_log");
         fputs("Redirecting pow() to AMD libM version\n", stderr);
         my_pow = dlsym(math_handle,"amd_pow");
     } else {
         math_handle = dlopen("libm.so.6",RTLD_NOW);
+        fputs("Redirecting exp() to glibc version\n", stderr);
+        my_exp = dlsym(math_handle,"exp");
         fputs("Redirecting log() to glibc version\n", stderr);
         my_log = dlsym(math_handle,"log");
         fputs("Redirecting pow() to glibc version\n", stderr);
@@ -95,6 +102,9 @@ void _mathwrap_fini(void)
     if (math_handle != NULL) dlclose(math_handle);
 
     fputs("========================\n",stderr);
+    numcalls = (double) callstats.exp_lo;
+    numcalls += ((double) callstats.exp_hi) * ((double) (1<<30));
+    fprintf(stderr,"Total calls to 'exp()'  : %20.16g\n", numcalls);
     numcalls = (double) callstats.log_lo;
     numcalls += ((double) callstats.log_hi) * ((double) (1<<30));
     fprintf(stderr,"Total calls to 'log()'  : %20.16g\n", numcalls);
@@ -103,6 +113,20 @@ void _mathwrap_fini(void)
     fprintf(stderr,"Total calls to 'pow()'  : %20.16g\n", numcalls);
     fputs("========================\n",stderr);
 }
+
+/** double precision exponential */
+double exp(double x) 
+{
+    ++ callstats.exp_lo;
+    if (callstats.exp_lo & 1<<30) {
+        callstats.exp_lo = 0;
+        ++ callstats.exp_hi;
+    }
+
+    return (*my_exp)(x);
+}
+
+/** double precision power */
 
 /** double precision natural logarithm */
 double log(double x) 
