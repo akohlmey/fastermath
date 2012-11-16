@@ -1,25 +1,38 @@
-mathwrap
+fastermath
 ========
 
-A shared library wrapper for 32-bit and 64-bit x86 Linux systems
-to redirect calls to math functions from the system libm to bundled
-SSE or AVX optimized versions or from external math libraries.
+A library of optimized math functions targeted at 32-bit and 64-bit
+x86 Linux systems.
+
+The purpose of  this  library is  to provide  drop in  replacements  for
+selected functions of the standard  math library 'libm'. These functions
+are optimized  versions of the   corresponding implementations from  the
+Cephes math library by Stephen L.  Moshier.  In most cases, the original
+code has  been simplified,  rewritten to  assume  little endian IEEE-754
+single and double precision math,  and reorganized to allow compilers to
+use SSE/AVX vector instructions.
+
 
 Installation
 ============
 
-This packages is Linux x86 specific and requires the following tools
-to be installed:
-- GNU make
-- GNU C-compiler (tested with 4.5.1)
-- AMD LibM (optional, tested with v3.0)
-- Intel SVML (optional, tested with the version bundled with icc 11.1) 
+This package is x86  and Linux specific and  makes heavy use of advanced
+features of the GNU toolchain  and thus requires a somewhat recent GNU C
+compiler, GNU binutils and GNU Make to be installed. Specifically:
+ - GNU make (tested with version 3.82)
+ - GNU C compiler (tested with version 4.5.1)
+ - GNU binutils (tested with version 2.20.51.0.7
 
 To compile simply type "make". This should produce two
-libraries libmathwrap.so and libmathwrap.a.
+libraries libfastermath.so and libfastermath.a. Those
+two libraries and the header fastermath.h should be copied
+to a suitable location, e.g. /usr/local/lib or /usr/local/lib64
+and /usr/local/include, respectively.
+
 
 Usage
 =====
 
+- 
 
 
