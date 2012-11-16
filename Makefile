@@ -13,7 +13,7 @@ LDLIBS=
 SRC=wrapsetup.c exp2.c
 OBJ=$(SRC:.c=.o)
 
-default: libfastermath.so libfastermath.a tester
+default: libfastermath.so libfastermath.a tester testerf
 
 libfastermath.so: $(OBJ)
 	$(LD) $(LDFLAGS) -o $@ $(OBJ) $(LDLIBS)
@@ -21,12 +21,15 @@ libfastermath.so: $(OBJ)
 libfastermath.a: $(OBJ)
 	$(AR) $(ARFLAGS) $@ $(OBJ)
 
-tester: tester.o libfastermath.a
-	$(LD) -o $@ $^ -lm -lrt
+tester: tester.o libfastermath.so
+	$(LD) -o $@ $< -L. -lfastermath -Wl,-rpath,. -lm -lrt
+
+testerf: testerf.o libfastermath.so
+	$(LD) -o $@ $< -L. -lfastermath -Wl,-rpath,. -lm -lrt
 
 clean:
 	rm -f libfastermath.so libfastermath.a $(OBJ) \
-	 tester.o tester
+	 tester.o tester testerf.o testerf
 
 spotless: clean
 	rm -f .depend *~

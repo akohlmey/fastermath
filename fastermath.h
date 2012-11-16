@@ -3,6 +3,7 @@
 
 /* prototypes for the exported interface */
 extern double fm_exp2(double);
+extern float fm_exp2f(float);
 
 #endif /* FASTERMATH_H */
 

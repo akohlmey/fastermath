@@ -18,8 +18,9 @@ double walltime(void)
     
 int main(int argc, char **argv)
 {
-    double xscale, diff, err, sumerr, start;
-    double *xnums, *res1, *res2, *res3;
+    double start, diff, err, sumerr;
+    float xscale;
+    float *xnums, *res1, *res2, *res3;
     int num, rep, i, j;
     unsigned int seed;
 
@@ -32,22 +33,22 @@ int main(int argc, char **argv)
         seed = atoi(argv[2]);
     }
     srand(seed);
-    xscale = 1.0 / ((double) RAND_MAX);
+    xscale = 1.0 / ((float) RAND_MAX);
 
-    posix_memalign((void **)&xnums, FM_DATA_ALIGN, num*sizeof(double));
-    posix_memalign((void **)&res1 , FM_DATA_ALIGN, num*sizeof(double));
-    posix_memalign((void **)&res2 , FM_DATA_ALIGN, num*sizeof(double));
-    posix_memalign((void **)&res3 , FM_DATA_ALIGN, num*sizeof(double));
+    posix_memalign((void **)&xnums, FM_DATA_ALIGN, num*sizeof(float));
+    posix_memalign((void **)&res1 , FM_DATA_ALIGN, num*sizeof(float));
+    posix_memalign((void **)&res2 , FM_DATA_ALIGN, num*sizeof(float));
+    posix_memalign((void **)&res3 , FM_DATA_ALIGN, num*sizeof(float));
 
     puts("testing exp2()");
 
     start = walltime();
     for (i=0; i < num; ++i) {
-        double r1,r2, rsq;
-        r1 = xscale * ((double) rand());
-        r2 = xscale * ((double) rand());
+        float r1,r2, rsq;
+        r1 = xscale * ((float) rand());
+        r2 = xscale * ((float) rand());
         rsq = sqrt(r1*r1 + r2*r2);
-        xnums[i] = 32.0 * rsq  - 16.0;
+        xnums[i] = 126.0 * rsq  - 63.0;
     }
     printf("time for %d x values: %.6g\n", num, walltime()-start);
 
