@@ -25,7 +25,7 @@ static const double fm_exp2_p[] = {
     1.51390680115615096133e3
 };
 static const double fm_exp2_q[] = {
-    1.00000000000000000000e0,
+/*  1.00000000000000000000e0, */
     2.33184211722314911771e2,
     4.36821166879210612817e3
 };
@@ -50,20 +50,11 @@ double fm_exp2(double x)
 
     xx = fpart*fpart;
 
-#if 0
     px =         fm_exp2_p[0];
-    qx =         fm_exp2_q[0];
     px = px*xx + fm_exp2_p[1];
+    qx =    xx + fm_exp2_q[0];
+    px = px*xx + fm_exp2_p[2];
     qx = qx*xx + fm_exp2_q[1];
-    px = px*xx + fm_exp2_p[2];
-    qx = qx*xx + fm_exp2_q[2];
-#else
-    px =         fm_exp2_p[0];
-    px = px*xx + fm_exp2_p[1];
-    qx =    xx + fm_exp2_q[1];
-    px = px*xx + fm_exp2_p[2];
-    qx = qx*xx + fm_exp2_q[2];
-#endif
     px = px * fpart;
 
     xx = 1.0 + 2.0*(px/(qx-px));
@@ -89,7 +80,7 @@ static const float fm_exp2f_p[] = {
     1.51390680115615096133e3f
 };
 static const float fm_exp2f_q[] = {
-    1.00000000000000000000e0,
+/*  1.00000000000000000000e0, */
     2.33184211722314911771e2,
     4.36821166879210612817e3
 };
@@ -115,11 +106,10 @@ float fm_exp2f(float x)
     xx = fpart*fpart;
 
     px =         fm_exp2f_p[0];
-    qx =         fm_exp2f_q[0];
     px = px*xx + fm_exp2f_p[1];
-    qx = qx*xx + fm_exp2f_q[1];
+    qx =    xx + fm_exp2f_q[0];
     px = px*xx + fm_exp2f_p[2];
-    qx = qx*xx + fm_exp2f_q[2];
+    qx = qx*xx + fm_exp2f_q[1];
     px = px * fpart;
 
     xx = 1.0f + 2.0f*(px/(qx-px));
