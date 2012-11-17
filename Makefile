@@ -15,21 +15,25 @@ OBJ=$(SRC:.c=.o)
 
 default: libfastermath.so libfastermath.a tester testerf
 
+test: tester testerf
+	./tester 100000 1000
+	./testerf 100000 1000
+
 libfastermath.so: $(OBJ)
 	$(LD) $(LDFLAGS) -o $@ $(OBJ) $(LDLIBS)
 
 libfastermath.a: $(OBJ)
 	$(AR) $(ARFLAGS) $@ $(OBJ)
 
-tester: tester.o libfastermath.so
+tester: tester.c  libfastermath.so
 	$(LD) -o $@ $< -L. -lfastermath -Wl,-rpath,. -lm -lrt
 
-testerf: testerf.o libfastermath.so
+testerf: testerf.c libfastermath.so
 	$(LD) -o $@ $< -L. -lfastermath -Wl,-rpath,. -lm -lrt
 
 clean:
 	rm -f libfastermath.so libfastermath.a $(OBJ) \
-	 tester.o tester testerf.o testerf
+	 tester.o tester testerf.o testerf perf.data* gmon.out core.[0-9]*
 
 spotless: clean
 	rm -f .depend *~
