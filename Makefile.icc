@@ -1,11 +1,12 @@
-# -*- Makefile -*- flags for GNU C compiler to build library
-CC=gcc
-CFLAGS=-O3 -Wall -Wextra -fPIC -ffast-math -march=core2
+
+# -*- Makefile -*- flags for Intel C compiler to build library
+CC=icc
+CFLAGS=-O3 -xHOST -Wall -fPIC -no-prec-div -ansi-alias -rcd -fast-transcendentals
 AR=ar
 ARFLAGS=rcsv
 LD=$(CC)
 CPPFLAGS=
-LDFLAGS=-shared
+LDFLAGS=-shared -static-intel
 LDLIBS= 
 
 # wrapper sources
