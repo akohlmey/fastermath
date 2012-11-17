@@ -40,7 +40,7 @@ int main(int argc, char **argv)
     posix_memalign((void **)&res2 , FM_DATA_ALIGN, num*sizeof(float));
     posix_memalign((void **)&res3 , FM_DATA_ALIGN, num*sizeof(float));
 
-    puts("testing exp2()");
+    puts("testing exp2f()");
 
     start = walltime();
     for (i=0; i < num; ++i) {

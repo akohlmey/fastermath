@@ -30,10 +30,11 @@ void _fastermath_init(void)
     /* initialization may only be done once */
     if (init_done) return;
     init_done = 1;
-
+#if 0
     fputs("\nInitializing fastermath v0.1\n========================\n", stderr);
 
     fputs("========================\n", stderr);
+#endif
 }
 
 
@@ -43,8 +44,9 @@ void _fastermath_init(void)
  * processing of executables. */
 void _fastermath_fini(void)
 {
-
+#if 0
     fputs("========================\n",stderr);
+#endif
 }
 
 /* 
