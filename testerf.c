@@ -8,7 +8,7 @@
 
 #define FM_DATA_ALIGN 32
 
-double walltime(void) 
+static double walltime(void) 
 {
     struct timespec ts;
 
@@ -33,7 +33,7 @@ int main(int argc, char **argv)
         seed = atoi(argv[2]);
     }
     srand(seed);
-    xscale = 1.0 / ((float) RAND_MAX);
+    xscale = 1.0f / ((float) RAND_MAX);
 
     posix_memalign((void **)&xnums, FM_DATA_ALIGN, num*sizeof(float));
     posix_memalign((void **)&res1 , FM_DATA_ALIGN, num*sizeof(float));
@@ -47,37 +47,37 @@ int main(int argc, char **argv)
         float r1,r2, rsq;
         r1 = xscale * ((float) rand());
         r2 = xscale * ((float) rand());
-        rsq = sqrt(r1*r1 + r2*r2);
-        xnums[i] = 126.0 * rsq  - 63.0;
+        rsq = sqrtf(r1*r1 + r2*r2);
+        xnums[i] = 126.0f * rsq  - 63.0f;
     }
     printf("time for %d x values: %.6g\n", num, walltime()-start);
 
     start = walltime();
     for (j=0; j < rep; ++j) {
         for (i=0; i < num; ++i)
-            res1[i] = fm_exp2(xnums[i]);
+            res1[i] = fm_exp2f(xnums[i]);
     }
-    printf("time for fm exp2(): %.6g\n", walltime()-start);
+    printf("time for fm exp2f(): %.6g\n", walltime()-start);
 
 #ifdef __x86_64__
     start = walltime();
     for (j=0; j < rep; ++j) {
         for (i=0; i < num; ++i)
-            res2[i] = amd_exp2(xnums[i]);
+            res2[i] = amd_exp2f(xnums[i]);
     }
-    printf("time for limM exp2(): %.6g\n", walltime()-start);
+    printf("time for limM exp2f(): %.6g\n", walltime()-start);
 #endif
 
     start = walltime();
     for (j=0; j < rep; ++j) {
         for (i=0; i < num; ++i)
-            res3[i] = exp2(xnums[i]);
+            res3[i] = exp2f(xnums[i]);
     }
     printf("time for default exp2(): %.6g\n", walltime()-start);
 
     sumerr = 0.0;
     for (i=0; i < num; ++i) {
-        diff = fabs(res1[i]-res3[i]);
+        diff = fabsf(res1[i]-res3[i]);
         err  = diff/fabs(res3[i]);
         sumerr += err;
     }
@@ -86,7 +86,7 @@ int main(int argc, char **argv)
 #ifdef __x86_64__
     sumerr = 0.0;
     for (i=0; i < num; ++i) {
-        diff = fabs(res2[i]-res3[i]);
+        diff = fabsf(res2[i]-res3[i]);
         err  = diff/fabs(res3[i]);
         sumerr += err;
     }

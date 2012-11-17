@@ -8,7 +8,7 @@
 
 #define FM_DATA_ALIGN 32
 
-double walltime(void) 
+static double walltime(void) 
 {
     struct timespec ts;
 
@@ -47,7 +47,7 @@ int main(int argc, char **argv)
         r1 = xscale * ((double) rand());
         r2 = xscale * ((double) rand());
         rsq = sqrt(r1*r1 + r2*r2);
-        xnums[i] = 32.0 * rsq  - 16.0;
+        xnums[i] = 1022.0 * rsq  - 511.0;
     }
     printf("time for %d x values: %.6g\n", num, walltime()-start);
 
