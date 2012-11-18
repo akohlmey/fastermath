@@ -2,11 +2,13 @@
 #define FASTERMATH_H
 
 /* prototypes for the exported interface */
-extern double fm_exp2(double);
 extern double fm_exp(double);
+extern double fm_exp2(double);
+extern double fm_exp10(double);
 
-extern float fm_exp2f(float);
 extern float fm_expf(float);
+extern float fm_exp2f(float);
+extern float fm_exp10f(float);
 
 #endif /* FASTERMATH_H */
 
