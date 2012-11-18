@@ -48,7 +48,7 @@ double fm_exp(double x)
     else if (__builtin_isnan(x))
         return x;
 
-    ipart  = __builtin_floor(FM_1BYLN2*x + 0.5);
+    ipart  = __builtin_floor(FM_LDE*x + 0.5);
     fpart  = x - ipart*FM_LN2;
 
     epart.f = 0.0;
@@ -108,7 +108,7 @@ float fm_expf(float x)
     else if (__builtin_isnanf(x))
         return x;
 
-    ipart  = __builtin_floorf(FM_1BYLN2F*x + 0.5f);
+    ipart  = __builtin_floorf(FM_LDEF*x + 0.5f);
     fpart  = x - ipart*FM_LN2F;
 
     epart.f = 0.0f;
