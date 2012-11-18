@@ -17,6 +17,9 @@ typedef union
 #define FM_FLOAT_BIAS 0x7f
 #define FM_INFINITYF (__builtin_inff())
 
+#define FM_LN2F    6.9314718055994530941e-1f /* ln(2) */
+#define FM_1BYLN2F 1.44269504088896340737f   /* 1/ln(2) */
+
 typedef union 
 {
     double  f;
@@ -29,6 +32,9 @@ typedef union
 }  udi_t;
 #define FM_DOUBLE_BIAS 0x03ff
 #define FM_INFINITY (__builtin_inf())
+
+#define FM_LN2    6.9314718055994530941e-1 /* ln(2) */
+#define FM_1BYLN2 1.44269504088896340737   /* 1/ln(2) */
 
 #endif /* FM_INTERNAL_H */
 

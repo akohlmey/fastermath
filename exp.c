@@ -30,8 +30,6 @@ static const double fm_exp_q[] = {
     2.00000000000000000009e0,
 };
 
-static const double fm_exp_ln2    =  6.9314718055994530941e-1; /* ln(2) */
-static const double fm_exp_1byln2 =  1.44269504088896340737;   /* 1/ln(2) */
 static const double fm_exp_max =  7.08396418532264106224E2;  /* log 2**1022 */
 static const double fm_exp_min = -7.08396418532264106224E2;  /* log 2**-1022 */
 
@@ -50,8 +48,8 @@ double fm_exp(double x)
     else if (__builtin_isnan(x))
         return x;
 
-    ipart  = __builtin_floor(fm_exp_1byln2*x + 0.5);
-    fpart  = x - ipart*fm_exp_ln2;
+    ipart  = __builtin_floor(FM_1BYLN2*x + 0.5);
+    fpart  = x - ipart*FM_LN2;
 
     epart.f = 0.0;
     epart.b.e = (unsigned int) (ipart + FM_DOUBLE_BIAS);
@@ -92,9 +90,6 @@ static const float fm_expf_q[] = {
     2.27265548208155028766e-1f,
     2.00000000000000000009e0f,
 };
-
-static const float fm_expf_ln2    =  6.9314718055994530941e-1f;  /* ln(2) */
-static const float fm_expf_1byln2 =  1.44269504088896340737f;    /* 1/ln(2) */
 static const float fm_expf_max =  88.02969187150841f;  /* ln(2^127) */
 static const float fm_expf_min = -88.7228391116729996; /* log(2^-128) */
 
@@ -110,11 +105,11 @@ float fm_expf(float x)
         return 0.0f;
     else if (x >= fm_expf_max)
         return FM_INFINITYF;
-    else if (__builtin_isnan(x))
+    else if (__builtin_isnanf(x))
         return x;
 
-    ipart  = __builtin_floor(fm_expf_1byln2*x + 0.5f);
-    fpart  = x - ipart*fm_expf_ln2;
+    ipart  = __builtin_floorf(FM_1BYLN2F*x + 0.5f);
+    fpart  = x - ipart*FM_LN2F;
 
     epart.f = 0.0f;
     epart.b.e = (unsigned int) (ipart + FM_FLOAT_BIAS);
