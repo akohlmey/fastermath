@@ -1,7 +1,8 @@
 
 # -*- Makefile -*- flags for Intel C compiler to build library
 CC=icc
-CFLAGS=-O3 -xHOST -Wall -fPIC -no-prec-div -ansi-alias -rcd -fast-transcendentals
+CFLAGS=-O3 -xHOST -Wall -fPIC -no-prec-div -ansi-alias -rcd -fast-transcendentals \
+	-D__builtin_isnan=isnan -D__builtin_isnanf=isnanf
 AR=ar
 ARFLAGS=rcsv
 LD=$(CC)
@@ -16,8 +17,8 @@ OBJ=$(SRC:.c=.o)
 default: libfastermath.so libfastermath.a tester testerf
 
 test: tester testerf
-	./tester 100000 1000
-	./testerf 100000 1000
+	./tester 10000 1000
+	./testerf 10000 1000
 
 libfastermath.so: $(OBJ)
 	$(LD) $(LDFLAGS) -o $@ $(OBJ) $(LDLIBS)
