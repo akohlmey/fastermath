@@ -10,7 +10,7 @@ LDFLAGS=-shared -static-intel
 LDLIBS= 
 
 # wrapper sources
-SRC=wrapsetup.c exp2.c
+SRC=wrapsetup.c exp2.c exp.c
 OBJ=$(SRC:.c=.o)
 
 default: libfastermath.so libfastermath.a tester testerf

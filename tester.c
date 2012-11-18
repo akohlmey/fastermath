@@ -47,7 +47,7 @@ int main(int argc, char **argv)
         r1 = xscale * ((double) rand());
         r2 = xscale * ((double) rand());
         rsq = sqrt(r1*r1 + r2*r2);
-        xnums[i] = 1022.0 * rsq  - 511.0;
+        xnums[i] = 250.0 * rsq  - 500.0;
     }
     printf("time for %d x values: %.6g\n", num, walltime()-start);
 
@@ -73,6 +73,50 @@ int main(int argc, char **argv)
             res3[i] = exp2(xnums[i]);
     }
     printf("time for default exp2(): %.6g\n", walltime()-start);
+
+
+    sumerr = 0.0;
+    for (i=0; i < num; ++i) {
+        diff = fabs(res1[i]-res3[i]);
+        err  = diff/fabs(res3[i]);
+        sumerr += err;
+    }
+    printf("%d tests | avgerr fm %.6g\n", num, sumerr / ((double) num));
+
+#ifdef __x86_64__
+    sumerr = 0.0;
+    for (i=0; i < num; ++i) {
+        diff = fabs(res2[i]-res3[i]);
+        err  = diff/fabs(res3[i]);
+        sumerr += err;
+    }
+    printf("%d tests | avgerr libM %.6g\n", num, sumerr / ((double) num));
+#endif
+
+    puts("testing exp()");
+
+    start = walltime();
+    for (j=0; j < rep; ++j) {
+        for (i=0; i < num; ++i)
+            res1[i] = fm_exp(xnums[i]);
+    }
+    printf("time for fm exp(): %.6g\n", walltime()-start);
+
+#ifdef __x86_64__
+    start = walltime();
+    for (j=0; j < rep; ++j) {
+        for (i=0; i < num; ++i)
+            res2[i] = amd_exp(xnums[i]);
+    }
+    printf("time for limM exp(): %.6g\n", walltime()-start);
+#endif
+
+    start = walltime();
+    for (j=0; j < rep; ++j) {
+        for (i=0; i < num; ++i)
+            res3[i] = exp(xnums[i]);
+    }
+    printf("time for default exp(): %.6g\n", walltime()-start);
 
     sumerr = 0.0;
     for (i=0; i < num; ++i) {

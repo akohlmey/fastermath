@@ -1,6 +1,6 @@
 # -*- Makefile -*- flags for GNU C compiler to build library
 CC=gcc
-CFLAGS=-O3 -Wall -Wextra -fPIC -ffast-math -march=core2
+CFLAGS=-O3 -Wall -W -fPIC -ffast-math -march=core2
 AR=ar
 ARFLAGS=rcsv
 LD=$(CC)
@@ -9,14 +9,14 @@ LDFLAGS=-shared
 LDLIBS= 
 
 # wrapper sources
-SRC=wrapsetup.c exp2.c
+SRC=wrapsetup.c exp2.c exp.c
 OBJ=$(SRC:.c=.o)
 
 default: libfastermath.so libfastermath.a tester testerf
 
 test: tester testerf
-	./tester 100000 1000
-	./testerf 100000 1000
+	./tester 10000 1000
+	./testerf 10000 1000
 
 libfastermath.so: $(OBJ)
 	$(LD) $(LDFLAGS) -o $@ $(OBJ) $(LDLIBS)
