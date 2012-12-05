@@ -27,10 +27,10 @@ libfastermath.a: $(OBJ)
 	$(AR) $(ARFLAGS) $@ $(OBJ)
 
 tester: tester.c  libfastermath.so
-	$(LD) -o $@ $< -L. -lfastermath -Wl,-rpath,. -lm -lrt
+	$(LD) -o $@ $< -L. -lfastermath -Wl,-rpath,. -lamdlibm -lm -lrt
 
 testerf: testerf.c libfastermath.so
-	$(LD) -o $@ $< -L. -lfastermath -Wl,-rpath,. -lm -lrt
+	$(LD) -o $@ $< -L. -lfastermath -Wl,-rpath,. -lamdlibm -lm -lrt
 
 clean:
 	rm -f libfastermath.so libfastermath.a $(OBJ) \

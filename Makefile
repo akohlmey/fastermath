@@ -1,6 +1,6 @@
 # -*- Makefile -*- flags for GNU C compiler to build library
 CC=gcc
-CFLAGS=-O3 -Wall -W -fPIC -ffast-math -march=core2
+CFLAGS=-O3 -Wall -W -ffast-math -march=native -falign-functions=16
 AR=ar
 ARFLAGS=rcsv
 LD=$(CC)
@@ -25,10 +25,10 @@ libfastermath.a: $(OBJ)
 	$(AR) $(ARFLAGS) $@ $(OBJ)
 
 tester: tester.c  libfastermath.so
-	$(LD) -o $@ $< -L. -lfastermath -Wl,-rpath,. -lm -lrt
+	$(LD) -o $@ $< -L. -lfastermath -Wl,-rpath,. -lamdlibm -lm -lrt
 
 testerf: testerf.c libfastermath.so
-	$(LD) -o $@ $< -L. -lfastermath -Wl,-rpath,. -lm -lrt
+	$(LD) -o $@ $< -L. -lfastermath -Wl,-rpath,. -lamdlibm -lm -lrt
 
 clean:
 	rm -f libfastermath.so libfastermath.a $(OBJ) \
