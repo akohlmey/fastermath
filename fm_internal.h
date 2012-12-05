@@ -2,19 +2,22 @@
 #ifndef FM_INTERNAL_H
 #define FM_INTERNAL_H
 
+#include <stdint.h>
+
 /* internal definitions for the fastermath library */
 
 /* unions to manipulate IEEE 754 floating point data */
 typedef union 
 {
-    float         f;
+    float    f;
+    uint32_t u;
     struct {
         unsigned int m:23;
         unsigned int e:8;
         unsigned int n:1;
     } b;
 }  ufi_t;
-#define FM_FLOAT_BIAS 0x7f
+#define FM_FLOAT_BIAS 0x7fU
 #define FM_INFINITYF (__builtin_inff())
 
 #define FM_LN2F 6.9314718055994530941e-1f /* ln(2) = 1/ld(e) */
@@ -24,7 +27,8 @@ typedef union
 
 typedef union 
 {
-    double  f;
+    double   f;
+    uint64_t u;
     struct {
         unsigned int m1:32;
         unsigned int m0:20;
@@ -32,7 +36,7 @@ typedef union
         unsigned int n:1;
     } b;
 }  udi_t;
-#define FM_DOUBLE_BIAS 0x03ff
+#define FM_DOUBLE_BIAS 0x03ffU
 #define FM_INFINITY (__builtin_inf())
 
 #define FM_LN2 6.9314718055994530941e-1 /* ln(2) = 1/ld(e) */
