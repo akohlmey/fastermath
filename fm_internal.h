@@ -16,6 +16,7 @@ typedef union
 }  ufi_t;
 #define FM_FLOAT_BIAS 0x7f
 #define FM_INFINITYF (__builtin_inff())
+#define FM_NANF      (__builtin_nanf(""))
 
 #define FM_LN2F 6.9314718055994530941e-1f /* ln(2) = 1/ld(e) */
 #define FM_LDEF 1.44269504088896340737f   /* ld(e) = 1/ln(2) */
@@ -34,11 +35,14 @@ typedef union
 }  udi_t;
 #define FM_DOUBLE_BIAS 0x03ff
 #define FM_INFINITY (__builtin_inf())
+#define FM_NAN      (__builtin_nan(""))
 
 #define FM_LN2 6.9314718055994530941e-1 /* ln(2) = 1/ld(e) */
 #define FM_LDE 1.44269504088896340737   /* ld(e) = 1/ln(2) */
 #define FM_LOG10_2 3.01029995663981195214e-1 /* log_10(2) = 1/log_2(10) */
 #define FM_LOG2_10 3.32192809488736234787e0  /* log_2(10) = 1/log_10(2) */
+
+#define FM_SQRTH 7.07106781186547524401e-1   /* sqrt(2)/2 */
 
 #endif /* FM_INTERNAL_H */
 

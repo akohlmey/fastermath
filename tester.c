@@ -40,6 +40,59 @@ int main(int argc, char **argv)
     posix_memalign((void **)&res2 , FM_DATA_ALIGN, num*sizeof(double));
     posix_memalign((void **)&res3 , FM_DATA_ALIGN, num*sizeof(double));
 
+    puts("testing log()");
+
+    start = walltime();
+    for (i=0; i < num; ++i) {
+        double r1;
+        r1 = xscale * ((double) rand());
+        xnums[i] = exp(300.0 * r1  - 300.0);
+    }
+    printf("time for %d x values: %.6g\n", num, walltime()-start);
+
+    start = walltime();
+    for (j=0; j < rep; ++j) {
+        for (i=0; i < num; ++i)
+            res1[i] = fm_log(xnums[i]);
+    }
+    printf("time for fm log(): %.6g\n", walltime()-start);
+
+#ifdef __x86_64__
+    start = walltime();
+    for (j=0; j < rep; ++j) {
+        for (i=0; i < num; ++i)
+            res2[i] = amd_log(xnums[i]);
+    }
+    printf("time for limM log(): %.6g\n", walltime()-start);
+#endif
+
+    start = walltime();
+    for (j=0; j < rep; ++j) {
+        for (i=0; i < num; ++i)
+            res3[i] = log(xnums[i]);
+    }
+    printf("time for default log(): %.6g\n", walltime()-start);
+
+
+    sumerr = 0.0;
+    for (i=0; i < num; ++i) {
+        diff = fabs(res1[i]-res3[i]);
+        err  = diff/fabs(res3[i]);
+        sumerr += err;
+    }
+    printf("%d tests | avgerr fm %.6g\n", num, sumerr / ((double) num));
+
+#ifdef __x86_64__
+    sumerr = 0.0;
+    for (i=0; i < num; ++i) {
+        diff = fabs(res2[i]-res3[i]);
+        err  = diff/fabs(res3[i]);
+        sumerr += err;
+    }
+    printf("%d tests | avgerr libM %.6g\n", num, sumerr / ((double) num));
+#endif
+
+
     puts("testing exp2()");
 
     start = walltime();

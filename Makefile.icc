@@ -1,24 +1,26 @@
 
 # -*- Makefile -*- flags for Intel C compiler to build library
 CC=icc
-CFLAGS=-O3 -xHOST -Wall -fPIC -no-prec-div -ansi-alias -rcd -fast-transcendentals \
-	-D__builtin_isnan=isnan -D__builtin_isnanf=isnanf
+CFLAGS=-O3 -Wall -fPIC -no-prec-div -ansi-alias -rcd -fast-transcendentals
 AR=ar
 ARFLAGS=rcsv
-LD=$(CC)
+LD=gcc
 CPPFLAGS=
-LDFLAGS=-shared -static-intel
-LDLIBS= 
+LDFLAGS=-shared -L/opt/intel/Compiler/11.1/072/lib/ia32/ #-static-intel
+LDLIBS= -Wl,-Bstatic,-limf_pic,-lirc,-Bdynamic
 
 # wrapper sources
-SRC=wrapsetup.c exp2.c exp.c exp10.c
+SRC=wrapsetup.c exp2.c exp.c exp10.c log.c
 OBJ=$(SRC:.c=.o)
 
-default: libfastermath.so libfastermath.a tester testerf
+default: libfastermath.so libfastermath.a tester testerf wrapintel.so
 
 test: tester testerf
 	./tester 10000 1000
 	./testerf 10000 1000
+
+wrapintel.so: wrapintel.o
+	$(LD) $(LDFLAGS) -o $@ $^ $(LDLIBS)
 
 libfastermath.so: $(OBJ)
 	$(LD) $(LDFLAGS) -o $@ $(OBJ) $(LDLIBS)
@@ -27,10 +29,10 @@ libfastermath.a: $(OBJ)
 	$(AR) $(ARFLAGS) $@ $(OBJ)
 
 tester: tester.c  libfastermath.so
-	$(LD) -o $@ $< -L. -lfastermath -Wl,-rpath,. -lm -lrt
+	$(LD) -o $@ $< -L. -lfastermath -Wl,-rpath,.:/opt/intel/Compiler/11.1/072/lib/ia32 -lm -lrt
 
 testerf: testerf.c libfastermath.so
-	$(LD) -o $@ $< -L. -lfastermath -Wl,-rpath,. -lm -lrt
+	$(LD) -o $@ $< -L. -lfastermath -Wl,-rpath,.:/opt/intel/Compiler/11.1/072/lib/ia32 -lm -lrt
 
 clean:
 	rm -f libfastermath.so libfastermath.a $(OBJ) \
