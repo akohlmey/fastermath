@@ -2,6 +2,7 @@
 #ifndef FM_INTERNAL_H
 #define FM_INTERNAL_H
 
+#include <time.h>
 #include <stdint.h>
 
 /* internal definitions for the fastermath library */
