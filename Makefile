@@ -16,4 +16,4 @@ Obj_% : %
 clean:
 	rm -rf Obj_*
 
-
+.SUFFIX:

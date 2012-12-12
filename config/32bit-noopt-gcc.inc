@@ -3,10 +3,12 @@
 CC=gcc
 CPPFLAGS=
 ARCHFLAGS=-m32 -march=686 -mfpmath=387 -mpc64
-GENFLAGS=-falign-functions=16 -fPIC -fno-builtins
+GENFLAGS=-falign-functions=16 -fPIC -fno-builtin
 OPTFLAGS=-O -g
 WARNFLAGS=-Wall -W
 
 LD=$(CC)
 LDFLAGS=-shared
-LDLIBS= -lm
+LDLIBS=
+
+TESTLIBS= -lrt -lm
