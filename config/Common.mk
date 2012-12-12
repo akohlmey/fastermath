@@ -44,7 +44,7 @@ clean:
 	$(LIBOBJ) $(TESTOBJ) a.out perf.data* gmon.out core.[0-9]*
 
 spotless: clean
-	rm -f .depend *~ *.s
+	rm -f .depend *~ ../*~ ../*/*~ *.s
 
 .depend: $(LIBSRC) $(TESTSCR)
 	$(CC) $(DEFS) $(CPPFLAGS) -MM $^ > $@
