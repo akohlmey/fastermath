@@ -11,4 +11,3 @@ LD=$(CC)
 LDFLAGS=   -shared
 LDLIBS=
 TESTLIBS=  -lrt -lm
-

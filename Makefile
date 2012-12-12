@@ -27,4 +27,7 @@ Obj_% : %
 clean:
 	rm -rf Obj_*
 
+spotless: clean
+	rm *~ */*~
+
 .SUFFIX:

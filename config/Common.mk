@@ -39,17 +39,10 @@ libfastermath.so: $(LIBOBJ)
 libfastermath.a: $(LIBOBJ)
 	$(AR) $(ARFLAGS) $@ $(LIBOBJ)
 
-clean:
-	rm -f libfastermath.so libfastermath.a tester testerf \
-	$(LIBOBJ) $(TESTOBJ) a.out perf.data* gmon.out core.[0-9]*
-
-spotless: clean
-	rm -f .depend *~ ../*~ ../*/*~ *.s
-
 .depend: $(LIBSRC) $(TESTSCR)
 	$(CC) $(DEFS) $(CPPFLAGS) -MM $^ > $@
 
-.PHONY: all default clean spotless 
+.PHONY: all default
 .SUFFIX:
 .SUFFIX: .c .o
 
