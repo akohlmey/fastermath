@@ -64,7 +64,7 @@ int main(int argc, char **argv)
     printf("<x>: %.6g    <x**2> - <x>**2: %.15g\n", err, sumerr-(err*err));
 
     /* special cases */
-    puts("testing special cases. system exp2()");
+    puts("testing special cases. libm exp2()");
     printf("exp2(0.0)-1.0 = %.15g\n", exp2(0.0)-1.0);
     printf("exp2(1.0)-2.0 = %.15g\n", exp2(1.0)-2.0);
     printf("exp2(-0.5)-1.0/sqrt(2) = %.15g\n", exp2(-0.5)-1.0/sqrt(2.0));
@@ -77,6 +77,20 @@ int main(int argc, char **argv)
     printf("exp2( 1024.0) = %.15g\n", exp2( 1024.0));
     printf("exp2(-2048.0) = %.15g\n", exp2(-2048.0));
     printf("exp2( 2048.0) = %.15g\n", exp2( 2048.0));
+
+    puts("testing special cases. __builtin_exp2()");
+    printf("exp2(0.0)-1.0 = %.15g\n", __builtin_exp2(0.0)-1.0);
+    printf("exp2(1.0)-2.0 = %.15g\n", __builtin_exp2(1.0)-2.0);
+    printf("exp2(-0.5)-1.0/sqrt(2) = %.15g\n", __builtin_exp2(-0.5)-1.0/sqrt(2.0));
+    printf("exp2(0.5)-sqrt(2) = %.15g\n", __builtin_exp2(0.5)-sqrt(2.0));
+    printf("2.0*exp2(-0.5)-exp2(0.5) = %.15g\n", 2.0*__builtin_exp2(-0.5)-__builtin_exp2(0.5));
+    printf("2.0*exp2(0.0)-exp2(1.0) = %.15g\n", 2.0*__builtin_exp2(0.0)-__builtin_exp2(1.0));
+    printf("exp2(-1023.0) = %.15g\n", __builtin_exp2(-1023.0));
+    printf("exp2( 1023.0) = %.15g\n", __builtin_exp2( 1023.0));
+    printf("exp2(-1024.0) = %.15g\n", __builtin_exp2(-1024.0));
+    printf("exp2( 1024.0) = %.15g\n", __builtin_exp2( 1024.0));
+    printf("exp2(-2048.0) = %.15g\n", __builtin_exp2(-2048.0));
+    printf("exp2( 2048.0) = %.15g\n", __builtin_exp2( 2048.0));
 
     puts("testing special cases. fm_exp2()");
     printf("exp2(0.0)-1.0 = %.15g\n", fm_exp2(0.0)-1.0);
@@ -100,22 +114,35 @@ int main(int argc, char **argv)
     }
     printf("time for system exp2(): %8.4fus\n", xscale*wallclock(&start));
 
-    puts("using fm_exp2()");
+    puts("using __builtin_exp2()");
     memset(res1, 0, num*sizeof(double));
     start = wallclock(NULL);
     for (j=0; j < rep; ++j) {
         for (i=0; i < num; ++i)
-            res1[i] += fm_exp2(xval[i]);
+            res1[i] += __builtin_exp2(xval[i]);
+    }
+    printf("time for __builtin_exp2(): %8.4fus.  ", xscale*wallclock(&start));
+    sumerr = 0.0;
+    for (i=0; i < num; ++i) {
+        sumerr += fabs(res1[i]-res0[i]);
+    }
+    printf("avgerr %.6g\n", sumerr/((double) num));
+
+    puts("using fm_exp2()");
+    memset(res2, 0, num*sizeof(double));
+    start = wallclock(NULL);
+    for (j=0; j < rep; ++j) {
+        for (i=0; i < num; ++i)
+            res2[i] += fm_exp2(xval[i]);
     }
     printf("time for fm_exp2():     %8.4fus.  ", xscale*wallclock(&start));
     sumerr = 0.0;
     for (i=0; i < num; ++i) {
-        diff = fabs(res1[i]-res0[i]);
-        err  = diff/fabs(res0[i]);
-        sumerr += err;
+        sumerr += fabs(res2[i]-res0[i]);
     }
     printf("avgerr %.6g\n", sumerr/((double) num));
-
+    return 0;
+    
 #if 0
 #ifdef __x86_64__
     start = wallclock();
@@ -126,21 +153,6 @@ int main(int argc, char **argv)
     printf("time for limM exp2(): %.6g\n", wallclock()-start);
 #endif
 
-    start = wallclock();
-    for (j=0; j < rep; ++j) {
-        for (i=0; i < num; ++i)
-            res3[i] = exp2(xval[i]);
-    }
-    printf("time for default exp2(): %.6g\n", wallclock()-start);
-
-
-    sumerr = 0.0;
-    for (i=0; i < num; ++i) {
-        diff = fabs(res1[i]-res3[i]);
-        err  = diff/fabs(res3[i]);
-        sumerr += err;
-    }
-    printf("%d tests | avgerr fm %.6g\n", num, sumerr / ((double) num));
 
 #ifdef __x86_64__
     sumerr = 0.0;
@@ -152,91 +164,6 @@ int main(int argc, char **argv)
     printf("%d tests | avgerr libM %.6g\n", num, sumerr / ((double) num));
 #endif
 
-    puts("testing exp()");
-
-    start = wallclock();
-    for (j=0; j < rep; ++j) {
-        for (i=0; i < num; ++i)
-            res1[i] = fm_exp(xval[i]);
-    }
-    printf("time for fm exp(): %.6g\n", wallclock()-start);
-
-#ifdef __x86_64__
-    start = wallclock();
-    for (j=0; j < rep; ++j) {
-        for (i=0; i < num; ++i)
-            res2[i] = amd_exp(xval[i]);
-    }
-    printf("time for limM exp(): %.6g\n", wallclock()-start);
-#endif
-
-    start = wallclock();
-    for (j=0; j < rep; ++j) {
-        for (i=0; i < num; ++i)
-            res3[i] = exp(xval[i]);
-    }
-    printf("time for default exp(): %.6g\n", wallclock()-start);
-
-    sumerr = 0.0;
-    for (i=0; i < num; ++i) {
-        diff = fabs(res1[i]-res3[i]);
-        err  = diff/fabs(res3[i]);
-        sumerr += err;
-    }
-    printf("%d tests | avgerr fm %.6g\n", num, sumerr / ((double) num));
-
-#ifdef __x86_64__
-    sumerr = 0.0;
-    for (i=0; i < num; ++i) {
-        diff = fabs(res2[i]-res3[i]);
-        err  = diff/fabs(res3[i]);
-        sumerr += err;
-    }
-    printf("%d tests | avgerr libM %.6g\n", num, sumerr / ((double) num));
-#endif
-
-    puts("testing exp10()");
-
-    start = wallclock();
-    for (j=0; j < rep; ++j) {
-        for (i=0; i < num; ++i)
-            res1[i] = fm_exp10(xval[i]);
-    }
-    printf("time for fm exp10(): %.6g\n", wallclock()-start);
-
-#ifdef __x86_64__
-    start = wallclock();
-    for (j=0; j < rep; ++j) {
-        for (i=0; i < num; ++i)
-            res2[i] = amd_exp10(xval[i]);
-    }
-    printf("time for limM exp10(): %.6g\n", wallclock()-start);
-#endif
-
-    start = wallclock();
-    for (j=0; j < rep; ++j) {
-        for (i=0; i < num; ++i)
-            res3[i] = exp10(xval[i]);
-    }
-    printf("time for default exp10(): %.6g\n", wallclock()-start);
-
-    sumerr = 0.0;
-    for (i=0; i < num; ++i) {
-        diff = fabs(res1[i]-res3[i]);
-        err  = diff/fabs(res3[i]);
-        sumerr += err;
-    }
-    printf("%d tests | avgerr fm %.6g\n", num, sumerr / ((double) num));
-
-#ifdef __x86_64__
-    sumerr = 0.0;
-    for (i=0; i < num; ++i) {
-        diff = fabs(res2[i]-res3[i]);
-        err  = diff/fabs(res3[i]);
-        sumerr += err;
-    }
-    printf("%d tests | avgerr libM %.6g\n", num, sumerr / ((double) num));
-#endif
 
 #endif
     return 0;

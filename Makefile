@@ -1,43 +1,19 @@
-# -*- Makefile -*- flags for GNU C compiler to build library
-CC=gcc
-CFLAGS=-O3 -Wall -W -ffast-math -march=native -falign-functions=16
-AR=ar
-ARFLAGS=rcsv
-LD=$(CC)
-CPPFLAGS=
-LDFLAGS=-shared
-LDLIBS= 
+# Top level -*- Makefile -*- for fastermath lib(s)
+ARCHES = $(patsubst config/%.inc,%,$(wildcard config/*.inc))
 
-# wrapper sources
-SRC=wrapsetup.c exp2.c exp.c exp10.c
-OBJ=$(SRC:.c=.o)
+default: subdirs
 
-default: libfastermath.so libfastermath.a tester testerf
 
-test: tester testerf
-	./tester 10000 1000
-	./testerf 10000 1000
+subdirs:
+	for d in $(ARCHES); \
+		do mkdir -p Obj_$$d ; \
+		make -C Obj_$$d -f ../config/Common.mk ARCH=$$d || break ;\
+	done
 
-libfastermath.so: $(OBJ)
-	$(LD) $(LDFLAGS) -o $@ $(OBJ) $(LDLIBS)
-
-libfastermath.a: $(OBJ)
-	$(AR) $(ARFLAGS) $@ $(OBJ)
-
-tester: tester.c  libfastermath.so
-	$(LD) -o $@ $< -L. -lfastermath -Wl,-rpath,. -lamdlibm -lm -lrt
-
-testerf: testerf.c libfastermath.so
-	$(LD) -o $@ $< -L. -lfastermath -Wl,-rpath,. -lamdlibm -lm -lrt
+Obj_% : %
+	mkdir -p $@
 
 clean:
-	rm -f libfastermath.so libfastermath.a $(OBJ) \
-	 tester.o tester testerf.o testerf perf.data* gmon.out core.[0-9]*
+	rm -rf Obj_*
 
-spotless: clean
-	rm -f .depend *~
 
-.depend: $(SRC)
-	$(CC) -MM $(SRC) > $@
-
-sinclude .depend
