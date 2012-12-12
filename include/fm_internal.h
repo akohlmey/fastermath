@@ -2,6 +2,10 @@
 #ifndef FM_INTERNAL_H
 #define FM_INTERNAL_H
 
+#ifndef _FM_INTERNAL
+#error use fm_internal.h header only for building the library
+#endif 
+
 #include <stdint.h>
 
 /* internal definitions for the fastermath library */

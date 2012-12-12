@@ -3,12 +3,11 @@
 CC=gcc -m32
 CPPFLAGS=
 ARCHFLAGS= -march=i686 -mfpmath=387 -mpc64
-GENFLAGS=-falign-functions=16 -fPIC -fno-builtin
-OPTFLAGS=-O3 -ffast-math -fexpensive-optimizations
-WARNFLAGS=-Wall -W
+GENFLAGS=  -falign-functions=16 -fPIC -fno-builtin
+OPTFLAGS=  -O3 -ffast-math -fexpensive-optimizations
+WARNFLAGS= -Wall -W
 
 LD=$(CC)
-LDFLAGS=-shared
+LDFLAGS=   -shared
 LDLIBS=
-
-TESTLIBS= -lrt -lm
+TESTLIBS=  -lrt -lm

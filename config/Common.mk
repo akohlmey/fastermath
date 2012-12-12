@@ -15,37 +15,45 @@ default: all
 
 endif
 
-CFLAGS= -I../include $(CPPFLAGS) $(ARCHFLAGS) $(GENFLAGS) $(OPTFLAGS) $(WARNFLAGS)
-SRC=exp2.c # exp.c exp10.c
-OBJ=$(SRC:.c=.o)
+DEFS=-I../include -D_FM_INTERNAL
+CFLAGS= $(CPPFLAGS) $(DEFS) $(ARCHFLAGS) $(GENFLAGS) $(OPTFLAGS) $(WARNFLAGS)
+LIBSRC=exp2.c # exp.c exp10.c
+LIBOBJ=$(LIBSRC:.c=.o)
+TESTSRC=tester.c # testerf.c
+TESTOBJ=$(TESTSRC:.c=.o)
 
 vpath %.c ../src
 vpath %.h ../include
 
 all: libfastermath.so libfastermath.a tester #testerf
 
-libfastermath.so: $(OBJ)
-	$(LD) $(LDFLAGS) -o $@ $(OBJ)
+tester: tester.o libfastermath.a
+	$(LD) -o $@ $^ $(LDLIBS) $(TESTLIBS)
 
-libfastermath.a: $(OBJ)
-	$(AR) $(ARFLAGS) $@ $(OBJ)
+testerf: testerf.o libfastermath.a
+	$(LD) -o $@ $^ $(LDLIBS) $(TESTLIBS)
 
-tester: tester.c  libfastermath.so
-	$(LD) -I../include $(CFLAGS) -o $@ $< -L. -lfastermath -Wl,-rpath,$(PWD) $(LDLIBS) $(TESTLIBS)
+libfastermath.so: $(LIBOBJ)
+	$(LD) $(LDFLAGS) -o $@ $(LIBOBJ)
 
-testerf: testerf.c libfastermath.so
-	$(LD) -o $@ $< -L. -lfastermath -Wl,-rpath,. -lamdlibm -lm -lrt
+libfastermath.a: $(LIBOBJ)
+	$(AR) $(ARFLAGS) $@ $(LIBOBJ)
 
 clean:
-	rm -f libfastermath.so libfastermath.a $(OBJ) *.s a.out \
-	 tester.o tester testerf.o testerf perf.data* gmon.out core.[0-9]*
+	rm -f libfastermath.so libfastermath.a tester testerf \
+	$(LIBOBJ) $(TESTOBJ) a.out perf.data* gmon.out core.[0-9]*
 
 spotless: clean
-	rm -f .depend *~
+	rm -f .depend *~ *.s
 
-.depend: $(SRC)
-	$(CC) -I../include -MM $^ > $@
+.depend: $(LIBSRC) $(TESTSCR)
+	$(CC) $(DEFS) $(CPPFLAGS) -MM $^ > $@
 
-.PHONY: all default spotless 
+.PHONY: all default clean spotless 
+.SUFFIX:
+.SUFFIX: .c .o
+
+.c.o:
+	$(CC) -o $@ -c $(CFLAGS) $<
 
 sinclude .depend
