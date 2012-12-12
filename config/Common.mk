@@ -15,22 +15,19 @@ default: all
 
 endif
 
-DEFS=-I../include -D_FM_INTERNAL
+DEFS=-I../include -I. -D_FM_INTERNAL
 CFLAGS= $(CPPFLAGS) $(DEFS) $(ARCHFLAGS) $(GENFLAGS) $(OPTFLAGS) $(WARNFLAGS)
 LIBSRC=exp2.c # exp.c exp10.c
 LIBOBJ=$(LIBSRC:.c=.o)
-TESTSRC=tester.c # testerf.c
+TESTSRC=tester.c
 TESTOBJ=$(TESTSRC:.c=.o)
 
 vpath %.c ../src
 vpath %.h ../include
 
-all: libfastermath.so libfastermath.a tester #testerf
+all: libfastermath.so libfastermath.a tester
 
-tester: tester.o libfastermath.a
-	$(LD) -o $@ $^ $(LDLIBS) $(TESTLIBS)
-
-testerf: testerf.o libfastermath.a
+tester: $(TESTOBJ) libfastermath.a
 	$(LD) -o $@ $^ $(LDLIBS) $(TESTLIBS)
 
 libfastermath.so: $(LIBOBJ)
@@ -39,7 +36,17 @@ libfastermath.so: $(LIBOBJ)
 libfastermath.a: $(LIBOBJ)
 	$(AR) $(ARFLAGS) $@ $(LIBOBJ)
 
-.depend: $(LIBSRC) $(TESTSCR)
+config.c: config-template.c
+	sed -e 's,@ARCH@,$(ARCH),' 		\
+		-e 's,@CPPFLAGS@,$(CPPFLAGS),'	\
+		-e 's,@DEFS@,$(DEFS),'		\
+		-e 's,@ARCHFLAGS@,$(ARCHFLAGS),'\
+		-e 's,@GENFLAGS@,$(GENFLAGS),'	\
+		-e 's,@OPTFLAGS@,$(OPTFLAGS),'	\
+		-e 's,@WARNFLAGS@,$(WARNFLAGS),'\
+		$< > $@
+
+.depend: $(LIBSRC) $(TESTSRC) config.c
 	$(CC) $(DEFS) $(CPPFLAGS) -MM $^ > $@
 
 .PHONY: all default

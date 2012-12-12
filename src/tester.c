@@ -1,5 +1,4 @@
 
-#define _GNU_SOURCE
 #include <math.h>
 #include <stdlib.h>
 #include <string.h>
@@ -8,8 +7,11 @@
 
 #include "fastermath.h"
 
+#include "config.c"
+
 #define FM_DATA_ALIGN 16
 
+/* compute high precision walltime and walltime difference */
 static double wallclock(const double * __restrict ref)
 {
     struct timespec t;
@@ -23,7 +25,7 @@ static double wallclock(const double * __restrict ref)
 
 int main(int argc, char **argv)
 {
-    double xscale, diff, err, sumerr, start;
+    double xscale, err, sumerr, start;
     double *xval, *res0, *res1, *res2, *res3;
     int num, rep, i, j;
     unsigned int seed;
@@ -45,10 +47,13 @@ int main(int argc, char **argv)
     posix_memalign((void **)&res2, FM_DATA_ALIGN, num*sizeof(double));
     posix_memalign((void **)&res3, FM_DATA_ALIGN, num*sizeof(double));
 
-    puts("testing exp2()");
+    puts("\n=========================\nfastmath test and benchmark");
+    puts(config);
+    puts("-------------------------\ntesting exponentiation functions");
 
     err = sumerr = 0.0;
     start = wallclock(NULL);
+    /* random numbers distributed between -5.0 and 5.0 */ 
     for (i=0; i < num; ++i) {
         double r1,r2,rsum;
         r1 = xscale * ((double) rand());
@@ -60,9 +65,10 @@ int main(int argc, char **argv)
     }
     err /= (double) num;
     sumerr /= (double) num;
-    printf("time/set for %d x-values: %.6g\n", num, wallclock(&start)/num);
+    printf("time/set for %d x-values : %8.4gus\n", num, wallclock(&start)/num);
     printf("<x>: %.6g    <x**2> - <x>**2: %.15g\n", err, sumerr-(err*err));
 
+#if 0
     /* special cases */
     puts("testing special cases. libm exp2()");
     printf("exp2(0.0)-1.0 = %.15g\n", exp2(0.0)-1.0);
@@ -103,44 +109,43 @@ int main(int argc, char **argv)
     printf("exp2( 1023.0) = %.15g\n", fm_exp2( 1023.0));
     printf("exp2(-2048.0) = %.15g\n", fm_exp2(-2048.0));
     printf("exp2( 2048.0) = %.15g\n", fm_exp2( 2048.0));
+#endif
 
     xscale = 1.0/(rep*num);
-    puts("getting reference data.");
     memset(res0, 0, num*sizeof(double));
     start = wallclock(NULL);
     for (j=0; j < rep; ++j) {
         for (i=0; i < num; ++i)
             res0[i] += exp2(xval[i]);
     }
-    printf("time for system exp2(): %8.4fus\n", xscale*wallclock(&start));
+    printf("time for system exp2()   : %8.4fus  ", xscale*wallclock(&start));
+    printf("numreps %d\n", rep);
 
-    puts("using __builtin_exp2()");
     memset(res1, 0, num*sizeof(double));
     start = wallclock(NULL);
     for (j=0; j < rep; ++j) {
         for (i=0; i < num; ++i)
             res1[i] += __builtin_exp2(xval[i]);
     }
-    printf("time for __builtin_exp2(): %8.4fus.  ", xscale*wallclock(&start));
+    printf("time for __builtin_exp2(): %8.4fus  ", xscale*wallclock(&start));
     sumerr = 0.0;
     for (i=0; i < num; ++i) {
         sumerr += fabs(res1[i]-res0[i]);
     }
-    printf("avgerr %.6g\n", sumerr/((double) num));
+    printf("avgerr  %.6g\n", sumerr/((double) num));
 
-    puts("using fm_exp2()");
     memset(res2, 0, num*sizeof(double));
     start = wallclock(NULL);
     for (j=0; j < rep; ++j) {
         for (i=0; i < num; ++i)
             res2[i] += fm_exp2(xval[i]);
     }
-    printf("time for fm_exp2():     %8.4fus.  ", xscale*wallclock(&start));
+    printf("time for fm_exp2():        %8.4fus  ", xscale*wallclock(&start));
     sumerr = 0.0;
     for (i=0; i < num; ++i) {
         sumerr += fabs(res2[i]-res0[i]);
     }
-    printf("avgerr %.6g\n", sumerr/((double) num));
+    printf("avgerr  %.6g\n", sumerr/((double) num));
     return 0;
     
 #if 0
