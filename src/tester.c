@@ -74,12 +74,12 @@ int main(int argc, char **argv)
     memset(res0, 0, num*sizeof(double));
     for (j=0; j < rep; ++j) {
         for (i=0; i < num; ++i)
-            res0[i] += exp2(xval[i]);
+            res0[i] += exp(xval[i]);
     }
     memset(res1, 0, num*sizeof(double));
     for (j=0; j < rep; ++j) {
         for (i=0; i < num; ++i)
-            res1[i] += __builtin_exp2(xval[i]);
+            res1[i] += __builtin_exp(xval[i]);
     }
     sumerr = 0.0;
     for (i=0; i < num; ++i) {

@@ -6,6 +6,9 @@ default: subdirs
 else ifeq ($(HOST),i686)
 ARCHES = $(patsubst config/%.inc,%,$(wildcard config/32*.inc))
 default: subdirs
+else ifeq ($(HOST),i386)
+ARCHES = $(patsubst config/%.inc,%,$(wildcard config/32*.inc))
+default: subdirs
 else
 default:
 	@echo
