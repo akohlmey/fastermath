@@ -28,6 +28,6 @@ clean:
 	rm -rf Obj_* perf.data*
 
 spotless: clean
-	rm *~ */*~
+	rm -f *~ */*~
 
 .SUFFIX:
