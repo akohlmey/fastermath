@@ -30,19 +30,17 @@ static const double fm_exp_q[] __attribute__ ((aligned(16))) = {
 };
 
 static const double fm_exp_c1 = 6.93145751953125e-1;
-static const double fm_exp_c2 = 1.42860682030941723212E-6;
+static const double fm_exp_c2 = 1.42860682030941723212e-6;
 
 double fm_exp(double x)
 {
-    double   ipart, fpart, xx, px, qx;
+    double   ipart, xx, px, qx;
     udi_t    epart;
 
     ipart  = __builtin_floor(FM_DOUBLE_LOG2OFE*x + 0.5);
     x -= ipart*fm_exp_c1;
     x -= ipart*fm_exp_c2;
-    
-    epart.f = 0.0;
-    epart.b.e = ((unsigned int) ipart) + FM_DOUBLE_BIAS;
+    FM_DOUBLE_INIT_EXP(epart,ipart);
 
     xx = x*x;
 
@@ -90,9 +88,7 @@ float fm_expf(float x)
     ipart  = __builtin_floorf(FM_FLOAT_LOG2OFE*x + 0.5f);
     x -= ipart*fm_expf_c1;
     x -= ipart*fm_expf_c2;
-
-    epart.f = 0.0f;
-    epart.b.e = ((unsigned int) ipart) + FM_FLOAT_BIAS;
+    FM_FLOAT_INIT_EXP(epart,ipart);
 
     px =         fm_expf_p[0];
     px = px*x  + fm_expf_p[1];

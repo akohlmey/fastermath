@@ -38,8 +38,7 @@ double fm_exp2(double x)
 
     ipart = __builtin_floor(x+0.5);
     fpart = x - ipart;
-    epart.f = 0.0;
-    epart.b.e = ((unsigned int) ipart) + FM_DOUBLE_BIAS;
+    FM_DOUBLE_INIT_EXP(epart,ipart);
 
     x = fpart*fpart;
 
@@ -91,8 +90,7 @@ float fm_exp2f(float x)
 
     ipart = __builtin_floorf(x + 0.5f);
     fpart = x - ipart;
-    epart.u = 0U;
-    epart.b.e = ((unsigned int) ipart) + FM_FLOAT_BIAS;
+    FM_FLOAT_INIT_EXP(epart,ipart);
 
     x =           fm_exp2f_p[0];
     x = x*fpart + fm_exp2f_p[1];
