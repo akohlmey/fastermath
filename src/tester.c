@@ -68,6 +68,25 @@ int main(int argc, char **argv)
     printf("time/set for %d x-values : %8.4gus\n", num, wallclock(&start)/num);
     printf("<x>: %.6g    <x**2> - <x>**2: %.15g\n", err, sumerr-(err*err));
 
+    puts("warming up...");
+    start = wallclock(NULL);
+    xscale = 1.0/(rep*num);
+    memset(res0, 0, num*sizeof(double));
+    for (j=0; j < rep; ++j) {
+        for (i=0; i < num; ++i)
+            res0[i] += exp2(xval[i]);
+    }
+    memset(res1, 0, num*sizeof(double));
+    for (j=0; j < rep; ++j) {
+        for (i=0; i < num; ++i)
+            res1[i] += __builtin_exp2(xval[i]);
+    }
+    sumerr = 0.0;
+    for (i=0; i < num; ++i) {
+        sumerr += fabs(res1[i]-res0[i]);
+    }
+    printf("time for warmup  %.6gms\n", wallclock(&start)*1e-3);
+
 #if 0
     /* special cases */
     puts("testing special cases. libm exp2()");
