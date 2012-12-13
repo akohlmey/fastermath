@@ -25,7 +25,7 @@ Obj_% : %
 	mkdir -p $@
 
 clean:
-	rm -rf Obj_*
+	rm -rf Obj_* perf.data*
 
 spotless: clean
 	rm *~ */*~
