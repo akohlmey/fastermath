@@ -30,6 +30,9 @@ int main(int argc, char **argv)
     int num, rep, i, j;
     unsigned int seed;
 
+    puts("\n=========================\nfastermath test and benchmark");
+    puts(config);
+
     if (argc < 3) return -1;
     num = atoi(argv[1]);
     rep = atoi(argv[2]);
@@ -47,10 +50,7 @@ int main(int argc, char **argv)
     posix_memalign((void **)&res2, FM_DATA_ALIGN, num*sizeof(double));
     posix_memalign((void **)&res3, FM_DATA_ALIGN, num*sizeof(double));
 
-    puts("\n=========================\nfastmath test and benchmark");
-    puts(config);
     puts("-------------------------\ntesting exponentiation functions");
-
     err = sumerr = 0.0;
     start = wallclock(NULL);
     /* random numbers distributed between -5.0 and 5.0 */ 
@@ -132,7 +132,7 @@ int main(int argc, char **argv)
     for (i=0; i < num; ++i) {
         sumerr += fabs(res1[i]-res0[i]);
     }
-    printf("avgerr  %.6g\n", sumerr/((double) num));
+    printf("avgerr  %.6g\n", sumerr/((double) num*rep));
 
     memset(res2, 0, num*sizeof(double));
     start = wallclock(NULL);
@@ -145,8 +145,7 @@ int main(int argc, char **argv)
     for (i=0; i < num; ++i) {
         sumerr += fabs(res2[i]-res0[i]);
     }
-    printf("avgerr  %.6g\n", sumerr/((double) num));
-    return 0;
+    printf("avgerr  %.6g\n", sumerr/((double) num*rep));
     
 #if 0
 #ifdef __x86_64__
@@ -156,6 +155,78 @@ int main(int argc, char **argv)
             res2[i] = amd_exp2(xval[i]);
     }
     printf("time for limM exp2(): %.6g\n", wallclock()-start);
+#endif
+
+#ifdef __x86_64__
+    sumerr = 0.0;
+    for (i=0; i < num; ++i) {
+        diff = fabs(res2[i]-res3[i]);
+        err  = diff/fabs(res3[i]);
+        sumerr += err;
+    }
+    printf("%d tests | avgerr libM %.6g\n", num, sumerr / ((double) num));
+#endif
+
+#endif
+
+    xscale = 1.0/(rep*num);
+    memset(res0, 0, num*sizeof(double));
+    start = wallclock(NULL);
+    for (j=0; j < rep; ++j) {
+        for (i=0; i < num; ++i)
+            res0[i] += exp(xval[i]);
+    }
+    printf("time for system exp()    : %8.4fus  ", xscale*wallclock(&start));
+    printf("numreps %d\n", rep);
+
+    memset(res1, 0, num*sizeof(double));
+    start = wallclock(NULL);
+    for (j=0; j < rep; ++j) {
+        for (i=0; i < num; ++i)
+            res1[i] += __builtin_exp(xval[i]);
+    }
+    printf("time for __builtin_exp():  %8.4fus  ", xscale*wallclock(&start));
+    sumerr = 0.0;
+    for (i=0; i < num; ++i) {
+        sumerr += fabs(res1[i]-res0[i]);
+    }
+    printf("avgerr  %.6g\n", sumerr/((double) num*rep));
+
+    memset(res2, 0, num*sizeof(double));
+    start = wallclock(NULL);
+    for (j=0; j < rep; ++j) {
+        for (i=0; i < num; ++i)
+            res2[i] += fm_exp(xval[i]);
+    }
+    printf("time for fm_exp():         %8.4fus  ", xscale*wallclock(&start));
+    sumerr = 0.0;
+    for (i=0; i < num; ++i) {
+        sumerr += fabs(res2[i]-res0[i]);
+    }
+    printf("avgerr  %.6g\n", sumerr/((double) num*rep));
+
+    memset(res3, 0, num*sizeof(double));
+    start = wallclock(NULL);
+    for (j=0; j < rep; ++j) {
+        for (i=0; i < num; ++i)
+            res3[i] += fm_exp_alt(xval[i]);
+    }
+    printf("time for fm_exp_alt():     %8.4fus  ", xscale*wallclock(&start));
+    sumerr = 0.0;
+    for (i=0; i < num; ++i) {
+        sumerr += fabs(res3[i]-res0[i]);
+    }
+    printf("avgerr  %.6g\n", sumerr/((double) num*rep));
+    return 0;
+    
+#if 0
+#ifdef __x86_64__
+    start = wallclock();
+    for (j=0; j < rep; ++j) {
+        for (i=0; i < num; ++i)
+            res2[i] = amd_exp(xval[i]);
+    }
+    printf("time for limM exp(): %.6g\n", wallclock()-start);
 #endif
 
 

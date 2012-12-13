@@ -1,21 +1,29 @@
 #ifndef FASTERMATH_H
 #define FASTERMATH_H
 
-#ifndef __GNUC__
-#error "this library only works with the GNU C compilers"
+#ifdef __cplusplus
+#define FM_EXPORT_DECL extern "C"
+#else
+#define FM_EXPORT_DECL extern
 #endif
 
-#ifdef __cplusplus
-extern "C" {
+#ifdef __GNUC__
+#define FM_FUNC_DECL1(type,name) \
+    FM_EXPORT_DECL type name(type) __attribute__ ((pure,nothrow))
+#else
+#define FM_FUNC_DECL1(type,name) \
+    FM_EXPORT_DECL type name(type)
 #endif
 
 /* prototypes for the exported interface */
-double fm_exp2(double) __attribute__ ((pure,nothrow));
-float fm_exp2f(float) __attribute__ ((pure,nothrow));
+FM_FUNC_DECL1(double,fm_exp);
+FM_FUNC_DECL1(double,fm_exp2);
 
-#ifdef __cplusplus
-}
-#endif
+FM_FUNC_DECL1(float,fm_expf);
+FM_FUNC_DECL1(float,fm_exp2f);
+
+FM_FUNC_DECL1(double,fm_exp_alt);
+FM_FUNC_DECL1(float,fm_expf_alt);
 
 #endif /* FASTERMATH_H */
 

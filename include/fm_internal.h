@@ -23,6 +23,10 @@ typedef union
 }  ufi_t;
 #define FM_FLOAT_BIAS 0x7f
 
+/* single precision constants */
+#define FM_FLOAT_LOG2OFE 1.4426950408889634074f
+#define FM_FLOAT_LOGEOF2 6.9314718055994530942e-1f
+
 typedef union 
 {
     double   f;
@@ -35,6 +39,10 @@ typedef union
     } b;
 }  udi_t;
 #define FM_DOUBLE_BIAS 0x03ff
+
+/* double precision constants */
+#define FM_DOUBLE_LOG2OFE 1.4426950408889634074
+#define FM_DOUBLE_LOGEOF2 6.9314718055994530942e-1
 
 #endif /* FM_INTERNAL_H */
 

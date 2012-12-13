@@ -1,4 +1,4 @@
-/* faster versions of 2**x in single, double precision.
+/* faster versions of 2**x, e**x in single and double precision.
  *
  * Based on the Cephes math library 2.8
  */
@@ -55,6 +55,11 @@ double fm_exp2(double x)
     return epart.f*x;
 }
 
+double fm_exp_alt(double x)
+{
+    return fm_exp2(FM_DOUBLE_LOG2OFE*x);
+}
+
 /* optimizer friendly implementation of exp2f(x).
  *
  * strategy:
@@ -98,6 +103,11 @@ float fm_exp2f(float x)
     x = x*fpart + fm_exp2f_p[6];
 
     return epart.f*x;
+}
+
+float fm_expf_alt(float x)
+{
+    return fm_exp2f(FM_FLOAT_LOG2OFE*x);
 }
 
 #if defined(LIBM_ALIAS)
