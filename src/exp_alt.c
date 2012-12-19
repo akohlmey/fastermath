@@ -32,7 +32,7 @@ static const double fm_exp_q[] __attribute__ ((aligned(16))) = {
 static const double fm_exp_c1 = 6.93145751953125e-1;
 static const double fm_exp_c2 = 1.42860682030941723212e-6;
 
-double fm_exp(double x)
+double fm_exp_alt(double x)
 {
     double   ipart, xx, px, qx;
     udi_t    epart;
@@ -80,7 +80,7 @@ static const float fm_expf_p[] = {
 static const float fm_expf_c1 =  0.69314575f;
 static const float fm_expf_c2 = -2.12194440e-4f;
 
-float fm_expf(float x)
+float fm_expf_alt(float x)
 {
     float ipart, px;
     ufi_t epart;
@@ -99,12 +99,6 @@ float fm_expf(float x)
     px = px*x*x+ x + 1.0f;
     return epart.f*px;
 }
-
-#if defined(FM_LIBM_ALIAS)
-/* include aliases to the equivalent libm functions for use with LD_PRELOAD. */
-double exp(double x) __attribute__ ((alias("fm_exp")));
-float expf(float x) __attribute__ ((alias("fm_expf")));
-#endif
 
 /* 
  * Local Variables:
