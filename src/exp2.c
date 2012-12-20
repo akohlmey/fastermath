@@ -59,6 +59,11 @@ double fm_exp(double x)
     return fm_exp2(FM_DOUBLE_LOG2OFE*x);
 }
 
+double fm_exp10(double x)
+{
+    return fm_exp2(FM_DOUBLE_LOG2OF10*x);
+}
+
 /* optimizer friendly implementation of exp2f(x).
  *
  * strategy:
@@ -108,12 +113,19 @@ float fm_expf(float x)
     return fm_exp2f(FM_FLOAT_LOG2OFE*x);
 }
 
+float fm_exp10f(float x)
+{
+    return fm_exp2f(FM_FLOAT_LOG2OF10*x);
+}
+
 #if defined(LIBM_ALIAS)
 /* include aliases to the equivalent libm functions for use with LD_PRELOAD. */
 double exp2(double x) __attribute__ ((alias("fm_exp2")));
 double exp(double x) __attribute__ ((alias("fm_exp")));
+double exp10(double x) __attribute__ ((alias("fm_exp10")));
 float exp2f(float x) __attribute__ ((alias("fm_exp2f")));
 float expf(float x) __attribute__ ((alias("fm_expf")));
+float exp10f(float x) __attribute__ ((alias("fm_exp10f")));
 #endif
 
 /* 
