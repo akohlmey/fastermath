@@ -10,6 +10,7 @@
 #include "config.c"
 
 #define FM_DATA_ALIGN 16
+#define FM_ERR_THRESH 1.0e-9
 
 /* compute high precision walltime and walltime difference */
 static double wallclock(const double * __restrict ref)
@@ -162,7 +163,10 @@ int main(int argc, char **argv)
     printf("time for fm_exp2():        %8.4fus  ", xscale*wallclock(&start));
     sumerr = 0.0;
     for (i=0; i < num; ++i) {
-        sumerr += fabs(res2[i]-res0[i]);
+        double diff=fabs(res2[i]-res0[i]);
+        if (diff > FM_ERR_THRESH)
+            printf("x=%20.15g  ref=%20.15g  new=%20.15g\n",xval[i],res0[i],res2[i]); 
+        sumerr += diff;
     }
     printf("avgerr  %.6g\n", sumerr/((double) num*rep));
     
