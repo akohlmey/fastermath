@@ -1,4 +1,5 @@
 
+#define _GNU_SOURCE
 #include <math.h>
 #include <stdlib.h>
 #include <string.h>
@@ -26,8 +27,10 @@ static double wallclock(const double * __restrict ref)
 
 int main(int argc, char **argv)
 {
-    double xscale, err, sumerr, start;
     double *xval, *res0, *res1, *res2, *res3;
+    float  *xvalf, *res0f, *res1f, *res2f, *res3f;
+    double xscale, err, sumerr, start;
+    double xscalef, errf, sumerrf;
     int num, rep, i, j;
     unsigned int seed;
 
@@ -44,12 +47,23 @@ int main(int argc, char **argv)
     }
     srand(seed);
     xscale = 1.0 / ((double) RAND_MAX);
+    xscalef = 1.0 / ((float) RAND_MAX);
 
-    posix_memalign((void **)&xval, FM_DATA_ALIGN, num*sizeof(double));
-    posix_memalign((void **)&res0, FM_DATA_ALIGN, num*sizeof(double));
-    posix_memalign((void **)&res1, FM_DATA_ALIGN, num*sizeof(double));
-    posix_memalign((void **)&res2, FM_DATA_ALIGN, num*sizeof(double));
-    posix_memalign((void **)&res3, FM_DATA_ALIGN, num*sizeof(double));
+#define GRABMEM(var,type)                                          \
+    posix_memalign((void **)&var, FM_DATA_ALIGN, num*sizeof(type)); \
+    memset(var, 0, num*sizeof(type))
+
+    GRABMEM(xval,double);
+    GRABMEM(res0,double);
+    GRABMEM(res1,double);
+    GRABMEM(res2,double);
+    GRABMEM(res3,double);
+
+    GRABMEM(xvalf,float);
+    GRABMEM(res0f,float);
+    GRABMEM(res1f,float);
+    GRABMEM(res2f,float);
+    GRABMEM(res3f,float);
 
     puts("-------------------------\ntesting exponentiation functions");
     err = sumerr = 0.0;
@@ -60,7 +74,8 @@ int main(int argc, char **argv)
         r1 = xscale * ((double) rand());
         r2 = xscale * ((double) rand());
         rsum = 0.5*(r1+r2);
-        xval[i] = 10.0 * rsum  - 5.0;
+        xval[i] = 20.0 * rsum  - 10.0;
+        xvalf[i] = (float) xval[i];
         err += xval[i];
         sumerr += xval[i]*xval[i];
     }
@@ -69,24 +84,108 @@ int main(int argc, char **argv)
     printf("time/set for %d x-values : %8.4gus\n", num, wallclock(&start)/num);
     printf("<x>: %.6g    <x**2> - <x>**2: %.15g\n", err, sumerr-(err*err));
 
-    puts("warming up...");
-    start = wallclock(NULL);
     xscale = 1.0/(rep*num);
-    memset(res0, 0, num*sizeof(double));
-    for (j=0; j < rep; ++j) {
-        for (i=0; i < num; ++i)
-            res0[i] += exp(xval[i]);
-    }
-    memset(res1, 0, num*sizeof(double));
-    for (j=0; j < rep; ++j) {
-        for (i=0; i < num; ++i)
-            res1[i] += __builtin_exp(xval[i]);
-    }
-    sumerr = 0.0;
-    for (i=0; i < num; ++i) {
-        sumerr += fabs(res1[i]-res0[i]);
-    }
-    printf("time for warmup  %.6gms\n", wallclock(&start)*1e-3);
+
+#define DOUBLE_ERROR(ref,res)                           \
+    sumerr = 0.0;                                       \
+    for (i=0; i < num; ++i) {                           \
+        sumerr += fabs((double)res[i]- (double)ref[i]); \
+    }                                                   \
+    printf("avgerr  %.6g\n", sumerr/((double) num*rep))
+
+#define FLOAT_ERROR(ref,res)                            \
+    sumerrf = 0.0f;                                     \
+    for (i=0; i < num; ++i) {                           \
+        sumerrf += fabsf(res[i]-ref[i]);                \
+    }                                                   \
+    printf("avgerr  %.6g\n", sumerrf/((double) num*rep))
+
+#define RUN_LOOP(x,result,func,type)            \
+    memset(result, 0, num*sizeof(type));        \
+    start = wallclock(NULL);                    \
+    for (j=0; j < rep; ++j) {                   \
+        for (i=0; i < num; ++i)                 \
+            result[i] += func(x[i]);            \
+    }                                           \
+    printf("time for% 20s(): %8.4fus  ",        \
+           #func, xscale*wallclock(&start))
+
+    RUN_LOOP(xval,res0,exp2,double);
+    printf("numreps %d\n", rep);
+
+    RUN_LOOP(xval,res1,__builtin_exp2,double);
+    DOUBLE_ERROR(res0,res1);
+
+    RUN_LOOP(xval,res2,fm_exp2,double);
+    DOUBLE_ERROR(res0,res2);
+
+#if 0
+#ifdef __x86_64__
+    RUN_LOOP(xval,res3,amd_exp2,double);
+    DOUBLE_ERROR(res0,res3)
+#endif
+#endif
+
+    RUN_LOOP(xval,res0,exp,double);
+    printf("numreps %d\n", rep);
+
+    RUN_LOOP(xval,res1,__builtin_exp,double);
+    DOUBLE_ERROR(res0,res1);
+
+    RUN_LOOP(xval,res2,fm_exp,double);
+    DOUBLE_ERROR(res0,res2);
+
+    RUN_LOOP(xval,res3,fm_exp_alt,double);
+    DOUBLE_ERROR(res0,res3);
+    
+    RUN_LOOP(xval,res0,exp10,double);
+    printf("numreps %d\n", rep);
+
+    RUN_LOOP(xval,res1,__builtin_exp10,double);
+    DOUBLE_ERROR(res0,res1);
+
+    RUN_LOOP(xval,res2,fm_exp10,double);
+    DOUBLE_ERROR(res0,res2);
+
+
+    RUN_LOOP(xvalf,res0f,exp2f,float);
+    printf("numreps %d\n", rep);
+
+    RUN_LOOP(xvalf,res1f,__builtin_exp2f,float);
+    DOUBLE_ERROR(res0f,res1f);
+
+    RUN_LOOP(xvalf,res2f,fm_exp2f,float);
+    DOUBLE_ERROR(res0f,res2f);
+
+#if 0
+#ifdef __x86_64__
+    RUN_LOOP(xvalf,res3f,amd_exp2f,float);
+    DOUBLE_ERROR(res0f,res3f)
+#endif
+#endif
+
+    RUN_LOOP(xvalf,res0f,expf,float);
+    printf("numreps %d\n", rep);
+
+    RUN_LOOP(xvalf,res1f,__builtin_expf,float);
+    DOUBLE_ERROR(res0f,res1f);
+
+    RUN_LOOP(xvalf,res2f,fm_expf,float);
+    DOUBLE_ERROR(res0f,res2f);
+
+    RUN_LOOP(xvalf,res3f,fm_expf_alt,float);
+    DOUBLE_ERROR(res0f,res3f);
+    
+    RUN_LOOP(xvalf,res0f,exp10f,float);
+    printf("numreps %d\n", rep);
+
+    RUN_LOOP(xvalf,res1f,__builtin_exp10f,float);
+    DOUBLE_ERROR(res0f,res1f);
+
+    RUN_LOOP(xvalf,res2f,fm_exp10f,float);
+    DOUBLE_ERROR(res0f,res2f);
+
+    return 0;
 
 #if 0
     /* special cases */
@@ -131,141 +230,6 @@ int main(int argc, char **argv)
     printf("exp2( 2048.0) = %.15g\n", fm_exp2( 2048.0));
 #endif
 
-    xscale = 1.0/(rep*num);
-    memset(res0, 0, num*sizeof(double));
-    start = wallclock(NULL);
-    for (j=0; j < rep; ++j) {
-        for (i=0; i < num; ++i)
-            res0[i] += exp2(xval[i]);
-    }
-    printf("time for system exp2()   : %8.4fus  ", xscale*wallclock(&start));
-    printf("numreps %d\n", rep);
-
-    memset(res1, 0, num*sizeof(double));
-    start = wallclock(NULL);
-    for (j=0; j < rep; ++j) {
-        for (i=0; i < num; ++i)
-            res1[i] += __builtin_exp2(xval[i]);
-    }
-    printf("time for __builtin_exp2(): %8.4fus  ", xscale*wallclock(&start));
-    sumerr = 0.0;
-    for (i=0; i < num; ++i) {
-        sumerr += fabs(res1[i]-res0[i]);
-    }
-    printf("avgerr  %.6g\n", sumerr/((double) num*rep));
-
-    memset(res2, 0, num*sizeof(double));
-    start = wallclock(NULL);
-    for (j=0; j < rep; ++j) {
-        for (i=0; i < num; ++i)
-            res2[i] += fm_exp2(xval[i]);
-    }
-    printf("time for fm_exp2():        %8.4fus  ", xscale*wallclock(&start));
-    sumerr = 0.0;
-    for (i=0; i < num; ++i) {
-        double diff=fabs(res2[i]-res0[i]);
-        if (diff > FM_ERR_THRESH)
-            printf("x=%20.15g  ref=%20.15g  new=%20.15g\n",xval[i],res0[i],res2[i]); 
-        sumerr += diff;
-    }
-    printf("avgerr  %.6g\n", sumerr/((double) num*rep));
-    
-#if 0
-#ifdef __x86_64__
-    start = wallclock();
-    for (j=0; j < rep; ++j) {
-        for (i=0; i < num; ++i)
-            res2[i] = amd_exp2(xval[i]);
-    }
-    printf("time for limM exp2(): %.6g\n", wallclock()-start);
-#endif
-
-#ifdef __x86_64__
-    sumerr = 0.0;
-    for (i=0; i < num; ++i) {
-        diff = fabs(res2[i]-res3[i]);
-        err  = diff/fabs(res3[i]);
-        sumerr += err;
-    }
-    printf("%d tests | avgerr libM %.6g\n", num, sumerr / ((double) num));
-#endif
-
-#endif
-
-    xscale = 1.0/(rep*num);
-    memset(res0, 0, num*sizeof(double));
-    start = wallclock(NULL);
-    for (j=0; j < rep; ++j) {
-        for (i=0; i < num; ++i)
-            res0[i] += exp(xval[i]);
-    }
-    printf("time for system exp()    : %8.4fus  ", xscale*wallclock(&start));
-    printf("numreps %d\n", rep);
-
-    memset(res1, 0, num*sizeof(double));
-    start = wallclock(NULL);
-    for (j=0; j < rep; ++j) {
-        for (i=0; i < num; ++i)
-            res1[i] += __builtin_exp(xval[i]);
-    }
-    printf("time for __builtin_exp():  %8.4fus  ", xscale*wallclock(&start));
-    sumerr = 0.0;
-    for (i=0; i < num; ++i) {
-        sumerr += fabs(res1[i]-res0[i]);
-    }
-    printf("avgerr  %.6g\n", sumerr/((double) num*rep));
-
-    memset(res2, 0, num*sizeof(double));
-    start = wallclock(NULL);
-    for (j=0; j < rep; ++j) {
-        for (i=0; i < num; ++i)
-            res2[i] += fm_exp(xval[i]);
-    }
-    printf("time for fm_exp():         %8.4fus  ", xscale*wallclock(&start));
-    sumerr = 0.0;
-    for (i=0; i < num; ++i) {
-        sumerr += fabs(res2[i]-res0[i]);
-    }
-    printf("avgerr  %.6g\n", sumerr/((double) num*rep));
-
-    memset(res3, 0, num*sizeof(double));
-    start = wallclock(NULL);
-    for (j=0; j < rep; ++j) {
-        for (i=0; i < num; ++i)
-            res3[i] += fm_exp_alt(xval[i]);
-    }
-    printf("time for fm_exp_alt():     %8.4fus  ", xscale*wallclock(&start));
-    sumerr = 0.0;
-    for (i=0; i < num; ++i) {
-        sumerr += fabs(res3[i]-res0[i]);
-    }
-    printf("avgerr  %.6g\n", sumerr/((double) num*rep));
-    return 0;
-    
-#if 0
-#ifdef __x86_64__
-    start = wallclock();
-    for (j=0; j < rep; ++j) {
-        for (i=0; i < num; ++i)
-            res2[i] = amd_exp(xval[i]);
-    }
-    printf("time for limM exp(): %.6g\n", wallclock()-start);
-#endif
-
-
-#ifdef __x86_64__
-    sumerr = 0.0;
-    for (i=0; i < num; ++i) {
-        diff = fabs(res2[i]-res3[i]);
-        err  = diff/fabs(res3[i]);
-        sumerr += err;
-    }
-    printf("%d tests | avgerr libM %.6g\n", num, sumerr / ((double) num));
-#endif
-
-
-#endif
-    return 0;
 }
 
 /* 
