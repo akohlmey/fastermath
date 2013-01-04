@@ -68,7 +68,7 @@ double fm_exp_alt(double x)
  * e**fpart from a pade style rational function.
  */
 
-static const float fm_expf_p[] = {
+static const float fm_expf_p[]  __attribute__ ((aligned(16))) = {
     1.9875691500e-4f,
     1.3981999507e-3f,
     8.3334519073e-3f,
@@ -77,7 +77,7 @@ static const float fm_expf_p[] = {
     5.0000001201e-1f
 };
 
-static const float fm_expf_c1 =  0.69314575f;
+static const float fm_expf_c1 =  0.693359375f;
 static const float fm_expf_c2 = -2.12194440e-4f;
 
 float fm_expf_alt(float x)
@@ -96,7 +96,8 @@ float fm_expf_alt(float x)
     px = px*x  + fm_expf_p[3];
     px = px*x  + fm_expf_p[4];
     px = px*x  + fm_expf_p[5];
-    px = px*x*x+ x + 1.0f;
+    px = px*x*x + x +1.0f;
+
     return epart.f*px;
 }
 
