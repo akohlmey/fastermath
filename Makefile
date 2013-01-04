@@ -1,43 +1,28 @@
-# -*- Makefile -*- flags for GNU C compiler to build library
-CC=gcc
-CFLAGS=-O3 -Wall -W -fPIC -ffast-math -march=core2 -fno-builtin
-AR=ar
-ARFLAGS=rcsv
-LD=$(CC)
-CPPFLAGS=
-LDFLAGS=-shared
-LDLIBS= 
+# Top level -*- Makefile -*- for fastermath lib(s)
+HOST = $(shell uname -m)
+ifeq ($(HOST),x86_64)
+ARCHES = $(patsubst config/%.inc,%,$(wildcard config/*.inc))
+default: subdirs
+else ifeq ($(HOST),i686)
+ARCHES = $(patsubst config/%.inc,%,$(wildcard config/32*.inc))
+default: subdirs
+else ifeq ($(HOST),i386)
+ARCHES = $(patsubst config/%.inc,%,$(wildcard config/32*.inc))
+default: subdirs
+else
+default:
+	@echo
+	@echo unsupported machine $(HOST)
+	@echo
+	exit 1 
+endif
 
-# wrapper sources
-SRC=wrapsetup.c exp2.c exp.c exp10.c log.c
-OBJ=$(SRC:.c=.o)
 
-default: libfastermath.so libfastermath.a tester testerf
+subdirs:
+	for d in $(ARCHES); \
+		do dir=Obj_$$d ; test -d $$dir || mkdir -p $$dir ; \
+		make -C $$dir -f ../config/Common.mk ARCH=$$d || break ;\
+	done
 
-test: tester testerf
-	./tester 10000 1000
-	./testerf 10000 1000
-
-libfastermath.so: $(OBJ)
-	$(LD) $(LDFLAGS) -o $@ $(OBJ) $(LDLIBS)
-
-libfastermath.a: $(OBJ)
-	$(AR) $(ARFLAGS) $@ $(OBJ)
-
-tester: tester.c  libfastermath.so
-	$(LD) -o $@ $< -L. -lfastermath -Wl,-rpath,. -lm -lrt
-
-testerf: testerf.c libfastermath.so
-	$(LD) -o $@ $< -L. -lfastermath -Wl,-rpath,. -lm -lrt
-
-clean:
-	rm -f libfastermath.so libfastermath.a $(OBJ) \
-	 tester.o tester testerf.o testerf perf.data* gmon.out core.[0-9]*
-
-spotless: clean
-	rm -f .depend *~
-
-.depend: $(SRC)
-	$(CC) -MM $(SRC) > $@
-
-sinclude .depend
+Obj_% : %
+	mkdir -p $@

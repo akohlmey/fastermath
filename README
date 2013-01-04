@@ -1,17 +1,16 @@
 fastermath
 ========
 
-A library of optimized math functions targeted at 32-bit and 64-bit
-x86 Linux systems.
+A library of math functions targeted at 32-bit and 64-bit x86 Linux systems.
 
-The purpose of  this  library is  to provide  drop in  replacements  for
-selected functions of the standard  math library 'libm'. These functions
-are optimized  versions of the   corresponding implementations from  the
-Cephes math library by Stephen L.  Moshier.  In most cases, the original
-code has  been simplified,  rewritten to  assume  little endian IEEE-754
-single and double precision math,  and reorganized to allow compilers to
-use SSE/AVX vector instructions.
-
+The purpose of this library is to provide faster drop in replacements for
+selected functions of the standard math library 'libm'. These functions
+are written so they can be more optimized by compilers and all special
+case tests for increased consistency and accuracy have been removed.
+They are based on the corresponding implementations from the Cephes math
+library by Stephen L. Moshier. The code has been simplified perusing
+internal compiler facilities wherever possible and assuming little
+endian IEEE-754 single and double precision math.
 
 Installation
 ============
@@ -19,9 +18,9 @@ Installation
 This package is x86  and Linux specific and  makes heavy use of advanced
 features of the GNU toolchain  and thus requires a somewhat recent GNU C
 compiler, GNU binutils and GNU Make to be installed. Specifically:
- - GNU make (tested with version 3.82)
- - GNU C compiler (tested with version 4.5.1)
- - GNU binutils (tested with version 2.20.51.0.7
+ - GNU make
+ - GNU C compiler
+ - GNU binutils
 
 To compile simply type "make". This should produce two
 libraries libfastermath.so and libfastermath.a. Those
