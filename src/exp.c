@@ -1,4 +1,4 @@
-/* faster versions of 2**x, e**x in single and double precision.
+/* faster versions of 2**x, e**x, and 10**x in single and double precision.
  *
  * Based on the Cephes math library 2.8
  */
@@ -131,7 +131,7 @@ float exp10f(float x) __attribute__ ((alias("fm_exp10f")));
 /* 
  * Local Variables:
  * mode: c
- * compile-command: "make"
+ * compile-command: "make -C .."
  * c-basic-offset: 4
  * fill-column: 76 
  * indent-tabs-mode: nil 

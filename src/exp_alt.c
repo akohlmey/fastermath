@@ -1,4 +1,4 @@
-/* faster versions of e**x in single, double precision.
+/* alternate faster versions of e**x and 10**x in single, double precision.
  *
  * Based on the Cephes math library 2.8
  */
@@ -200,7 +200,7 @@ float fm_exp10f_alt(float x)
 /* 
  * Local Variables:
  * mode: c
- * compile-command: "make"
+ * compile-command: "make -C .."
  * c-basic-offset: 4
  * fill-column: 76 
  * indent-tabs-mode: nil 

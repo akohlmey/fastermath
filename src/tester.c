@@ -259,7 +259,7 @@ int main(int argc, char **argv)
 /* 
  * Local Variables:
  * mode: c
- * compile-command: "make"
+ * compile-command: "make -C .."
  * c-basic-offset: 4
  * fill-column: 76 
  * indent-tabs-mode: nil 
