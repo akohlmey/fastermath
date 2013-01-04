@@ -26,3 +26,13 @@ subdirs:
 
 Obj_% : %
 	mkdir -p $@
+
+clean:
+	rm -rf Obj_* perf.data*
+
+spotless: clean
+	rm -f *~ */*~
+
+.SUFFIXES:
+
+.PHONY: default subdirs clean spotless
