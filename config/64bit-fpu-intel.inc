@@ -7,7 +7,7 @@ GENFLAGS=  -falign-functions=16 -fPIC -fno-builtin
 OPTFLAGS=  -O3 -ansi-alias -no-prec-div 
 WARNFLAGS= 
 
-LD=$(CC)
-LDFLAGS=   -shared -static-intel
+LD=$(CC) -static-intel
+LDFLAGS=   -shared
 LDLIBS=
 TESTLIBS=  -lrt -lm
