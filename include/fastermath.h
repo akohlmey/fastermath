@@ -26,6 +26,8 @@ FM_FUNC_DECL1(float,fm_exp10f);
 
 FM_FUNC_DECL1(double,fm_exp_alt);
 FM_FUNC_DECL1(float,fm_expf_alt);
+FM_FUNC_DECL1(double,fm_exp10_alt);
+FM_FUNC_DECL1(float,fm_exp10f_alt);
 
 #endif /* FASTERMATH_H */
 

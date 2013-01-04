@@ -1,10 +1,13 @@
 
-#define _GNU_SOURCE
+#define _GNU_SOURCE 1
 #include <math.h>
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
 #include <stdio.h>
+
+extern double exp10(double);
+extern float exp10f(float);
 
 #include "fastermath.h"
 
@@ -147,6 +150,9 @@ int main(int argc, char **argv)
     RUN_LOOP(xval,res2,fm_exp10,double);
     DOUBLE_ERROR(res0,res2);
 
+    RUN_LOOP(xval,res3,fm_exp10_alt,double);
+    DOUBLE_ERROR(res0,res3);
+
 
     RUN_LOOP(xvalf,res0f,exp2f,float);
     printf("numreps %d\n", rep);
@@ -184,6 +190,9 @@ int main(int argc, char **argv)
 
     RUN_LOOP(xvalf,res2f,fm_exp10f,float);
     DOUBLE_ERROR(res0f,res2f);
+
+    RUN_LOOP(xvalf,res3f,fm_exp10f_alt,float);
+    DOUBLE_ERROR(res0f,res3f);
 
     return 0;
 
