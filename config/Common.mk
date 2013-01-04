@@ -17,7 +17,7 @@ endif
 
 DEFS=-I../include -I. -D_FM_INTERNAL
 CFLAGS= $(CPPFLAGS) $(DEFS) $(ARCHFLAGS) $(GENFLAGS) $(OPTFLAGS) $(WARNFLAGS)
-LIBSRC=exp2.c exp_alt.c # exp10.c
+LIBSRC=exp.c exp_alt.c # exp10.c
 LIBOBJ=$(LIBSRC:.c=.o)
 TESTSRC=tester.c
 TESTOBJ=$(TESTSRC:.c=.o)
@@ -28,7 +28,7 @@ vpath %.h ../include
 all: libfastermath.so libfastermath.a tester
 
 tester: $(TESTOBJ) libfastermath.a
-	$(LD) -o $@ $^ $(LDLIBS) $(TESTLIBS)
+	$(LD) $(ARCHFLAGS) -o $@ $^ $(LDLIBS) $(TESTLIBS)
 
 libfastermath.so: $(LIBOBJ)
 	$(LD) $(LDFLAGS) -o $@ $(LIBOBJ)
