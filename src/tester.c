@@ -13,9 +13,6 @@ extern float exp10f(float);
 
 #include "config.c"
 
-#define FM_DATA_ALIGN 16
-#define FM_ERR_THRESH 1.0e-9
-
 /* compute high precision walltime and walltime difference */
 static double wallclock(const double * __restrict ref)
 {
@@ -50,7 +47,7 @@ int main(int argc, char **argv)
     srand(seed);
 
 #define GRABMEM(var,type)                                          \
-    posix_memalign((void **)&var, FM_DATA_ALIGN, num*sizeof(type)); \
+    posix_memalign((void **)&var, _FM_ALIGN, num*sizeof(type)); \
     memset(var, 0, num*sizeof(type))
 
     GRABMEM(xval,double);

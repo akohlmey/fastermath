@@ -20,12 +20,12 @@
  * the result becomes: exp2(x) = exp2(ipart) * exp2(fpart)
  */
 
-static const double fm_exp2_q[] __attribute__ ((aligned(16))) = {
+static const double fm_exp2_q[] __attribute__ ((aligned(_FM_ALIGN))) = {
 /*  1.00000000000000000000e0, */
     2.33184211722314911771e2,
     4.36821166879210612817e3
 };
-static const double fm_exp2_p[] __attribute__ ((aligned(16))) = {
+static const double fm_exp2_p[] __attribute__ ((aligned(_FM_ALIGN))) = {
     2.30933477057345225087e-2,
     2.02020656693165307700e1,
     1.51390680115615096133e3
@@ -78,7 +78,7 @@ double fm_exp10(double x)
  * the result becomes: exp2f(x) = exp2f(ipart) * exp2f(fpart)
  */
 
-static const float fm_exp2f_p[] __attribute__ ((aligned(16))) = {
+static const float fm_exp2f_p[] __attribute__ ((aligned(_FM_ALIGN))) = {
     1.535336188319500e-4f,
     1.339887440266574e-3f,
     9.618437357674640e-3f,

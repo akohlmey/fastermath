@@ -16,7 +16,7 @@
  * log_2(fpart) with a rational function in [1.0:2.0[
  */
 
-static const double fm_log2_p[] __attribute__ ((aligned(16))) = {
+static const double fm_log2_p[] __attribute__ ((aligned(_FM_ALIGN))) = {
     1.01875663804580931796e-4,
     4.97494994976747001425e-1,
     4.70579119878881725854e0,
@@ -25,7 +25,7 @@ static const double fm_log2_p[] __attribute__ ((aligned(16))) = {
     7.70838733755885391666e0,
 };
 
-static const double fm_log2_q[] __attribute__ ((aligned(16))) = {
+static const double fm_log2_q[] __attribute__ ((aligned(_FM_ALIGN))) = {
 /*  1.00000000000000000000e0, */
     1.12873587189167450590e1,
     4.52279145837532221105e1,
@@ -34,13 +34,13 @@ static const double fm_log2_q[] __attribute__ ((aligned(16))) = {
     2.31251620126765340583e1,
 };
 
-static const double fm_log2_r[] __attribute__ ((aligned(16))) = {
+static const double fm_log2_r[] __attribute__ ((aligned(_FM_ALIGN))) = {
     -7.89580278884799154124e-1,
      1.63866645699558079767e1,
     -6.41409952958715622951e1
 };
 
-static const double fm_log2_s[] __attribute__ ((aligned(16))) = {
+static const double fm_log2_s[] __attribute__ ((aligned(_FM_ALIGN))) = {
 /*   1.00000000000000000000e0, */
     -3.56722798256324312549e1,
      3.12093766372244180303e2,
