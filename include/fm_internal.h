@@ -33,6 +33,8 @@ typedef union
 #define FM_DOUBLE_BIAS 1023
 #define FM_DOUBLE_EMASK 2146435072
 #define FM_DOUBLE_EBITS 20
+#define FM_DOUBLE_MMASK 1048575
+#define FM_DOUBLE_EZERO 1072693248
 
 /* generate 2**num in floating point by bitshifting */
 #define FM_DOUBLE_INIT_EXP(var,num)                 \

@@ -196,7 +196,8 @@ int main(int argc, char **argv)
     }
     err /= (double) num;
     sumerr /= (double) num;
-    printf("time/set for %d x-values : %8.4gus\n", num, wallclock(&start)/num);    xscale = 1.0/(rep*num);
+    printf("time/set for %d x-values : %8.4gus\n", num, wallclock(&start)/num);
+    xscale = 1.0/(rep*num);
 
     RUN_LOOP(xval,res0,log2,double);
     printf("numreps %d\n", rep);
@@ -208,6 +209,18 @@ int main(int argc, char **argv)
     DOUBLE_ERROR(res0,res2);
 
     RUN_LOOP(xval,res3,fm_log2_alt,double);
+    DOUBLE_ERROR(res0,res3);
+
+    RUN_LOOP(xval,res0,log,double);
+    printf("numreps %d\n", rep);
+
+    RUN_LOOP(xval,res1,__builtin_log,double);
+    DOUBLE_ERROR(res0,res1);
+
+    RUN_LOOP(xval,res2,fm_log,double);
+    DOUBLE_ERROR(res0,res2);
+
+    RUN_LOOP(xval,res3,fm_log_alt,double);
     DOUBLE_ERROR(res0,res3);
 
     RUN_LOOP(xvalf,res0f,log2f,float);

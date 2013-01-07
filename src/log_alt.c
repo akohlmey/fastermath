@@ -49,8 +49,6 @@ static const double fm_log2_s[] __attribute__ ((aligned(16))) = {
 
 static const double fm_log2ofe_1 = 0.44269504088896340735992;
 
-#include <stdio.h>
-#include <math.h>
 double fm_log2_alt(double x) 
 {
     udi_t val;
@@ -118,6 +116,73 @@ double fm_log2_alt(double x)
     z += y;
     z += x;
     return ((double)ipart) + z;
+}
+
+double fm_log_alt(double x) 
+{
+    udi_t val;
+    double z,y,px,qx;
+    int32_t ipart;
+
+    val.f = x;
+    /* extract exponent and subtract bias */
+    ipart = (((val.i[1] & 0x7ff00000) >> 20) - FM_DOUBLE_BIAS);
+    /* mask out exponent to get the prefactor to 2**ipart */
+    val.i[1] &= 0x000fffff;
+    val.i[1] |= 0x3ff00000;
+    x = val.f;
+
+    if (((ipart > 2) || (ipart < -2))) {
+
+        if (x > FM_DOUBLE_SQRT2) {
+            x *= 0.5;
+            ++ipart;
+        }
+        
+        z  = x - 0.5;
+        z -= 0.5;
+        y = 0.5 * x  + 0.5;
+
+        x = z / y;
+        z = x*x;
+
+        px =        fm_log2_r[0];
+        qx =    z + fm_log2_s[0];
+        px = px*z + fm_log2_r[1];
+        qx = qx*z + fm_log2_s[1];
+        px = px*z + fm_log2_r[2];
+        qx = qx*z + fm_log2_s[2];
+
+        y = x * (z*px/qx);
+
+    } else {
+        
+        if (x > FM_DOUBLE_SQRT2) {
+            x *= 0.5;
+            ++ipart;
+        }
+
+        x -= 1.0;
+        z = x*x;
+
+        px =        fm_log2_p[0];
+        qx =    x + fm_log2_q[0];
+        px = px*x + fm_log2_p[1];
+        qx = qx*x + fm_log2_q[1];
+        px = px*x + fm_log2_p[2];
+        qx = qx*x + fm_log2_q[2];
+        px = px*x + fm_log2_p[3];
+        qx = qx*x + fm_log2_q[3];
+        px = px*x + fm_log2_p[4];
+        qx = qx*x + fm_log2_q[4];
+        px = px*x + fm_log2_p[5];
+
+        y = x*(z*px/qx) - 0.5*z;
+    }
+
+    z = y + x;
+    z += ((double)ipart) * FM_DOUBLE_LOGEOF2;
+    return z;
 }
 
 /* 
