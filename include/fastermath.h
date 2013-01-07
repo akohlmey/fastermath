@@ -20,6 +20,8 @@ FM_FUNC_DECL1(double,fm_exp);
 FM_FUNC_DECL1(double,fm_exp2);
 FM_FUNC_DECL1(double,fm_exp10);
 
+FM_FUNC_DECL1(double,fm_log2);
+
 FM_FUNC_DECL1(float,fm_expf);
 FM_FUNC_DECL1(float,fm_exp2f);
 FM_FUNC_DECL1(float,fm_exp10f);

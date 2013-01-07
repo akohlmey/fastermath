@@ -45,7 +45,7 @@ int main(int argc, char **argv)
     if (argc < 4) {
         seed = 1966;
     } else {
-        seed = atoi(argv[2]);
+        seed = atoi(argv[3]);
     }
     srand(seed);
 
@@ -203,6 +203,9 @@ int main(int argc, char **argv)
 
     RUN_LOOP(xval,res1,__builtin_log2,double);
     DOUBLE_ERROR(res0,res1);
+
+    RUN_LOOP(xval,res2,fm_log2,double);
+    DOUBLE_ERROR(res0,res2);
 
     RUN_LOOP(xvalf,res0f,log2f,float);
     printf("numreps %d\n", rep);
