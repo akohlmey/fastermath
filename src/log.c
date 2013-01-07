@@ -21,7 +21,7 @@ static const double fm_log2_p[] __attribute__ ((aligned(16))) = {
     4.70579119878881725854e0,
     1.44989225341610930846e1,
     1.79368678507819816313e1,
-    7.70838733755885391666e0,
+    7.70838733755885391666e0
 };
 
 static const double fm_log2_q[] __attribute__ ((aligned(16))) = {
@@ -30,31 +30,30 @@ static const double fm_log2_q[] __attribute__ ((aligned(16))) = {
     4.52279145837532221105e1,
     8.29875266912776603211e1,
     7.11544750618563894466e1,
-    2.31251620126765340583e1,
+    2.31251620126765340583e1
 };
 
-static const double fm_log2_r[] __attribute__ ((aligned(16))) = {
-    -7.89580278884799154124e-1,
-     1.63866645699558079767e1,
-    -6.41409952958715622951e1
+static const double fm_log2_r[] __attribute__ ((aligned(32))) = {
+    1.01875663804580931796e-4,  /* p[0] */
+    1.00000000000000000000e0,   /* q[-1] */
+    4.97494994976747001425e-1,  /* p[1] */
+    1.12873587189167450590e1,   /* q[0] */
+    4.70579119878881725854e0,   /* p[2] */
+    4.52279145837532221105e1,   /* q[1] */
+    1.44989225341610930846e1,   /* p[3] */
+    8.29875266912776603211e1,   /* q[2] */
+    1.79368678507819816313e1,   /* p[4] */
+    7.11544750618563894466e1,   /* q[3] */
+    7.70838733755885391666e0,   /* p[5] */
+    2.31251620126765340583e1    /* q[4] */
 };
 
-static const double fm_log2_s[] __attribute__ ((aligned(16))) = {
-/*   1.00000000000000000000e0, */
-    -3.56722798256324312549e1,
-     3.12093766372244180303e2,
-    -7.69691943550460008604e2
-};
 
-static const double fm_log2ofe_1 = 0.44269504088896340735992;
-
-#include <stdio.h>
-#include <math.h>
 double fm_log2(double x) 
 {
     udi_t val;
-    double z,y,px,qx;
-    int32_t ipart;
+    double z,px,qx;
+    int32_t ipart,fpart;
 
     val.f = x;
     /* extract exponent and subtract bias */
@@ -64,60 +63,36 @@ double fm_log2(double x)
     val.i[1] |= 0x3ff00000;
     x = val.f;
 
-    if (((ipart > 2) || (ipart < -2))) {
-
-        if (x > FM_DOUBLE_SQRT2) {
-            x *= 0.5;
-            ++ipart;
-        }
-        
-        z  = x - 0.5;
-        z -= 0.5;
-        y = 0.5 * x  + 0.5;
-
-        x = z / y;
-        z = x*x;
-
-        px =        fm_log2_r[0];
-        qx =    z + fm_log2_s[0];
-        px = px*z + fm_log2_r[1];
-        qx = qx*z + fm_log2_s[1];
-        px = px*z + fm_log2_r[2];
-        qx = qx*z + fm_log2_s[2];
-
-        y = x * (z*px/qx);
-
-    } else {
-        
-        if (x > FM_DOUBLE_SQRT2) {
-            x *= 0.5;
-            ++ipart;
-        }
-
-        x -= 1.0;
-        z = x*x;
-
-        px =        fm_log2_p[0];
-        qx =    x + fm_log2_q[0];
-        px = px*x + fm_log2_p[1];
-        qx = qx*x + fm_log2_q[1];
-        px = px*x + fm_log2_p[2];
-        qx = qx*x + fm_log2_q[2];
-        px = px*x + fm_log2_p[3];
-        qx = qx*x + fm_log2_q[3];
-        px = px*x + fm_log2_p[4];
-        qx = qx*x + fm_log2_q[4];
-        px = px*x + fm_log2_p[5];
-
-        y = x*(z*px/qx) - 0.5*z;
+    if (x > FM_DOUBLE_SQRTH) {
+        x *= 0.5;
+        ++ipart;
     }
+    x -= 1.0;
 
-    z = y * fm_log2ofe_1;
-    z += x * fm_log2ofe_1;
-    z += y;
-    z += x;
+    px =        fm_log2_r[0];
+    qx =        fm_log2_r[1];
+    px = px*x + fm_log2_r[2];
+    qx = qx*x + fm_log2_r[3];
+    px = px*x + fm_log2_r[4];
+    qx = qx*x + fm_log2_r[5];
+    px = px*x + fm_log2_r[6];
+    qx = qx*x + fm_log2_r[7];
+    px = px*x + fm_log2_r[8];
+    qx = qx*x + fm_log2_r[9];
+    px = px*x + fm_log2_r[10];
+    qx = qx*x + fm_log2_r[11];
+
+    z = x*x;
+    z = x*(z*px/qx) - 0.5*z + x;
+    z *= FM_DOUBLE_LOG2OFE;
+
     return ((double)ipart) + z;
 }
+
+#if defined(LIBM_ALIAS)
+/* include aliases to the equivalent libm functions for use with LD_PRELOAD. */
+double log2(double x) __attribute__ ((alias("fm_log2")));
+#endif
 
 /* 
  * Local Variables:

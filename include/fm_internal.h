@@ -31,6 +31,8 @@ typedef union
     int32_t  i[2];
 }  udi_t;
 #define FM_DOUBLE_BIAS 1023
+#define FM_DOUBLE_EMASK 2146435072
+#define FM_DOUBLE_EBITS 20
 
 /* generate 2**num in floating point by bitshifting */
 #define FM_DOUBLE_INIT_EXP(var,num)                 \
@@ -43,6 +45,7 @@ typedef union
 #define FM_FLOAT_LOG2OF10 3.32192809488736234789f
 #define FM_FLOAT_LOG10OF2 3.0102999566398119521f
 #define FM_FLOAT_SQRT2    1.41421356237309504880f
+#define FM_FLOAT_SQRTH    0.70710678118654752440f
 
 /* double precision constants */
 #define FM_DOUBLE_LOG2OFE  1.4426950408889634074
@@ -50,6 +53,7 @@ typedef union
 #define FM_DOUBLE_LOG2OF10 3.32192809488736234789
 #define FM_DOUBLE_LOG10OF2 3.0102999566398119521
 #define FM_DOUBLE_SQRT2    1.41421356237309504880
+#define FM_DOUBLE_SQRTH    0.70710678118654752440
 
 #endif /* FM_INTERNAL_H */
 

@@ -207,6 +207,9 @@ int main(int argc, char **argv)
     RUN_LOOP(xval,res2,fm_log2,double);
     DOUBLE_ERROR(res0,res2);
 
+    RUN_LOOP(xval,res3,fm_log2_alt,double);
+    DOUBLE_ERROR(res0,res3);
+
     RUN_LOOP(xvalf,res0f,log2f,float);
     printf("numreps %d\n", rep);
 
