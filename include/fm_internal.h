@@ -28,7 +28,7 @@ typedef union
 {
     double   f;
     uint64_t u;
-    int32_t  i[2];
+    struct {int32_t  i0,i1;};
 }  udi_t;
 #define FM_DOUBLE_BIAS 1023
 #define FM_DOUBLE_EMASK 2146435072
@@ -38,8 +38,8 @@ typedef union
 
 /* generate 2**num in floating point by bitshifting */
 #define FM_DOUBLE_INIT_EXP(var,num)                 \
-    var.i[0] = 0;                                   \
-    var.i[1] = (((int) num) + FM_DOUBLE_BIAS) << 20
+    var.i0 = 0;                                     \
+    var.i1 = (((int) num) + FM_DOUBLE_BIAS) << 20
 
 /* single precision constants */
 #define FM_FLOAT_LOG2OFE  1.4426950408889634074f
