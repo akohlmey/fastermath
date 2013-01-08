@@ -34,6 +34,9 @@ FM_FUNC_DECL1(float,fm_exp10f_alt);
 FM_FUNC_DECL1(double,fm_log_alt);
 FM_FUNC_DECL1(double,fm_log2_alt);
 
+void fm_init_log_tbl(int);
+FM_FUNC_DECL1(double,fm_log2_tbl);
+
 #endif /* FASTERMATH_H */
 
 /* 

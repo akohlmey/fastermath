@@ -177,6 +177,7 @@ int main(int argc, char **argv)
 
 
     puts("-------------------------\ntesting logarithm functions");
+    fm_init_log_tbl(15);
     err = sumerr = 0.0;
     xscale = 1.0 / ((double) RAND_MAX);
     start = wallclock(NULL);
@@ -207,6 +208,9 @@ int main(int argc, char **argv)
 
     RUN_LOOP(xval,res3,fm_log2_alt,double);
     DOUBLE_ERROR(res0,res3);
+
+    RUN_LOOP(xval,res1,fm_log2_tbl,double);
+    DOUBLE_ERROR(res0,res1);
 
     RUN_LOOP(xval,res0,log,double);
     printf("numreps %d\n", rep);

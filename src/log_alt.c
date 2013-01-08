@@ -6,7 +6,7 @@
 #include "fastermath.h"
 #include "fm_internal.h"
 
-/* optimizer friendly implementation of log2(x). */
+
 /* optimizer friendly implementation of log2(x).
  *
  * strategy:
@@ -49,6 +49,8 @@ static const double fm_log2_s[] __attribute__ ((aligned(_FM_ALIGN))) = {
 
 static const double fm_log2ofe_1 = 0.44269504088896340735992;
 
+#if 0
+
 double fm_log2_alt(double x) 
 {
     udi_t val;
@@ -57,10 +59,10 @@ double fm_log2_alt(double x)
 
     val.f = x;
     /* extract exponent and subtract bias */
-    ipart = (((val.i[1] & 0x7ff00000) >> 20) - FM_DOUBLE_BIAS);
+    ipart = (((val.i1 & 0x7ff00000) >> 20) - FM_DOUBLE_BIAS);
     /* mask out exponent to get the prefactor to 2**ipart */
-    val.i[1] &= 0x000fffff;
-    val.i[1] |= 0x3ff00000;
+    val.i1 &= 0x000fffff;
+    val.i1 |= 0x3ff00000;
     x = val.f;
 
     if (((ipart > 2) || (ipart < -2))) {
@@ -117,6 +119,51 @@ double fm_log2_alt(double x)
     z += x;
     return ((double)ipart) + z;
 }
+#else
+
+static const double Lg1 = 6.666666666666735130e-01;     /* 3FE55555 55555593 */
+static const double Lg2 = 3.999999999940941908e-01;     /* 3FD99999 9997FA04 */
+static const double Lg3 = 2.857142874366239149e-01;     /* 3FD24924 94229359 */
+static const double Lg4 = 2.222219843214978396e-01;     /* 3FCC71C5 1D8E78AF */
+static const double Lg5 = 1.818357216161805012e-01;     /* 3FC74664 96CB03DE */
+static const double Lg6 = 1.531383769920937332e-01;     /* 3FC39A09 D078C69F */
+static const double Lg7 = 1.479819860511658591e-01;     /* 3FC2F112 DF3E5244 */
+
+double fm_log2_alt(double x)
+{
+    udi_t val;
+    double z,f,w,s,t1,t2,R,dk;
+    int32_t hx, ipart;
+
+    val.f = x;
+    hx = val.i1;
+    
+    /* extract exponent and subtract bias */
+    ipart = (((hx & 0x7ff00000) >> 20) - FM_DOUBLE_BIAS);
+
+    /* mask out exponent to get the prefactor to 2**ipart */
+    hx &= 0x000fffff;
+    val.i1 = hx | 0x3ff00000;
+    x = val.f;
+
+    if (x > FM_DOUBLE_SQRT2) {
+        x *= 0.5;
+        ++ipart;
+    }
+
+    f = x - 1.0;
+
+    s = f / (2.0 + f);
+    z = s * s;
+    w = z*z;
+    dk = (double) ipart;
+    t1 = w*(Lg2 + w*(Lg4 + w*Lg6));
+    t2 = z*(Lg1 + w*(Lg3 + w*(Lg5 + w *Lg7)));
+    R = t1+t2;
+    return dk - ((s * (f - R)) -f ) * FM_DOUBLE_LOG2OFE;
+}
+
+#endif
 
 double fm_log_alt(double x) 
 {
@@ -126,10 +173,10 @@ double fm_log_alt(double x)
 
     val.f = x;
     /* extract exponent and subtract bias */
-    ipart = (((val.i[1] & 0x7ff00000) >> 20) - FM_DOUBLE_BIAS);
+    ipart = (((val.i1 & 0x7ff00000) >> 20) - FM_DOUBLE_BIAS);
     /* mask out exponent to get the prefactor to 2**ipart */
-    val.i[1] &= 0x000fffff;
-    val.i[1] |= 0x3ff00000;
+    val.i1 &= 0x000fffff;
+    val.i1 |= 0x3ff00000;
     x = val.f;
 
     if (((ipart > 2) || (ipart < -2))) {
@@ -184,6 +231,158 @@ double fm_log_alt(double x)
     z += ((double)ipart) * FM_DOUBLE_LOGEOF2;
     return z;
 }
+
+#if 0
+
+#include <math.h>
+#include <stdlib.h>
+#include <stdio.h>
+static double *fm_log_tbl   = NULL;
+static double  fm_log_frac  = 0.0;
+static int     fm_log_shift = 0;
+
+void fm_init_log_tbl(int bits) 
+{
+    udi_t val;
+    int i, max, nshift;
+
+    if (bits > 20) bits=20;
+    nshift = 20 - bits;
+    max = 1<<bits;
+    fm_log_shift = nshift;
+
+    printf("init log table with %d bits. nshift=%d mem=%.3f MB ",
+           bits, nshift, max*sizeof(double)/1024.0/1024.0);
+
+    posix_memalign((void **)&fm_log_tbl, _FM_ALIGN, max*sizeof(double));
+
+    val.i0 = 0;
+    for (i=0; i < max; ++i) {
+        val.i1 = 0x3ff00000 | (i << nshift);
+        fm_log_tbl[i] = log(val.f);
+    }
+
+    val.i1 = 0x3ff00000 | (1 << nshift);
+    fm_log_frac = 1.0/(val.f - 1.0);
+    printf("fm_log_frac=%.15g\n",fm_log_frac);
+
+}
+
+double fm_log2_tbl(double x)
+{
+    udi_t val;
+    int32_t hx, ipart;
+    const double *tbl;
+    double f1, f2;
+
+    val.f = x;
+    hx = val.i1;
+    
+    /* extract exponent and subtract bias */
+    ipart = (((hx & 0x7ff00000) >> 20) - FM_DOUBLE_BIAS);
+
+    /* mask out exponent to get the prefactor to 2**ipart */
+    hx &= 0x000fffff;
+    val.i1 = hx | 0x3ff00000;
+    hx >>= fm_log_shift;
+    x = val.f;
+
+    val.i0 = 0;
+    val.i1 = 0x3ff00000 | (hx <<fm_log_shift);
+
+    tbl = fm_log_tbl + hx;
+    f1 = *tbl;
+    ++tbl;
+    f2 = *tbl;
+    f1 += (f2-f1) * fm_log_frac * (x-val.f);
+
+    return ((double)ipart) + (f1* FM_DOUBLE_LOG2OFE);
+}
+
+#else
+
+
+#include <math.h>
+#include <stdlib.h>
+#include <stdio.h>
+static double *fm_log_tbl   = NULL;
+static double  fm_log_frac  = 0.0;
+static int     fm_log_shift = 0;
+
+void fm_init_log_tbl(int bits) 
+{
+    udi_t val;
+    double x,y;
+    int i, max, nshift;
+
+    if (bits > 20) bits=20;
+    nshift = 20 - bits;
+    max = 1<<bits;
+    fm_log_shift = nshift;
+
+    printf("init log table with %d bits. nshift=%d mem=%.3f MB ",
+           bits, nshift, max*sizeof(double)/1024.0/1024.0);
+
+    posix_memalign((void **)&fm_log_tbl, _FM_ALIGN, max*sizeof(double));
+
+    val.i1 = 0x3ff00000 | (1 << nshift);
+    fm_log_frac = 1.0/(val.f - 1.0);
+    printf("fm_log_frac=%.15g\n",fm_log_frac);
+
+    val.i0 = 0;
+    for (i=0; i < max; ++i) {
+        val.i1 = 0x3ff00000 | (i << nshift);
+        x = val.f;
+        fm_log_tbl[i] = log(x);
+    }
+}
+
+double fm_log2_tbl(double x)
+{
+    udi_t val;
+    int32_t hx, ipart;
+    const double *tbl;
+    double f1, f2, y, z;
+
+    val.f = x;
+    hx = val.i1;
+    
+    /* extract exponent and subtract bias */
+    ipart = (((hx & 0x7ff00000) >> 20) - FM_DOUBLE_BIAS);
+
+    /* mask out exponent to get the prefactor to 2**ipart */
+    hx &= 0x000fffff;
+    val.i1 = hx | 0x3ff00000;
+    hx >>= fm_log_shift;
+    x = val.f;
+
+    
+#if 1
+    val.i0 = 0;
+    val.i1 = 0x3ff00000 | (hx <<fm_log_shift);
+
+    tbl = fm_log_tbl + hx;
+    f1 = *tbl;
+    ++tbl;
+    f2 = *tbl;
+    f1 += (f2-f1) * fm_log_frac * (x-val.f);
+#else
+    /* compute approximation */
+    if (x > FM_DOUBLE_SQRT2) {
+        ++ipart;
+        x *= 0.5;
+    }
+    y = (x-1.0)/(x+1.0);
+    z = y*y;
+/*    y += y*(z*(0.333333333333333333333 + z*0.2));*/
+    y += y*(z*0.333333333333333333333);
+
+    f1 = 2.0*y;
+#endif
+
+    return ((double)ipart) + (f1* FM_DOUBLE_LOG2OFE);
+}
+#endif
 
 /* 
  * Local Variables:
