@@ -3,7 +3,7 @@
 ALIGNMENT=16
 CC=gcc -m64
 CPPFLAGS=
-ARCHFLAGS= -march=barcelona -mpc64 -mavx -mfma
+ARCHFLAGS= -march=barcelona -mpc64 -mavx -mfma -g
 GENFLAGS=  -falign-functions=$(ALIGNMENT) -fPIC -fno-builtin
 OPTFLAGS=  -O3 -ffast-math -fexpensive-optimizations
 WARNFLAGS= -Wall -W

@@ -3,7 +3,7 @@
 ALIGNMENT=32
 CC=gcc -m64
 CPPFLAGS=
-ARCHFLAGS= -march=core2 -mpc64 -mavx
+ARCHFLAGS= -march=core2 -mpc64 -mavx -g
 GENFLAGS=  -falign-functions=$(ALIGNMENT) -fPIC -fno-builtin
 OPTFLAGS=  -O3 -ffast-math -fexpensive-optimizations
 WARNFLAGS= -Wall -W

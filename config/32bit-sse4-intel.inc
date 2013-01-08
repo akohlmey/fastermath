@@ -1,9 +1,10 @@
 # -*- makefile -*-
 # configuration for Linux 32-bit x86 with intel icc using SSE2
+ALIGNMENT=16
 CC=icc -m32
 CPPFLAGS= 
-ARCHFLAGS= -xSSE4.1 -pc64 
-GENFLAGS=  -falign-functions=16 -fPIC -fno-builtin
+ARCHFLAGS= -xSSE4.1 -pc64 -g
+GENFLAGS=  -falign-functions=$(ALIGNMENT) -fPIC -fno-builtin
 OPTFLAGS=  -O3 -ansi-alias -no-prec-div -fast-transcendentals -rcd -ftz
 WARNFLAGS= 
 
