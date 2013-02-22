@@ -27,12 +27,17 @@ FM_FUNC_DECL1(float,fm_expf);
 FM_FUNC_DECL1(float,fm_exp2f);
 FM_FUNC_DECL1(float,fm_exp10f);
 
+FM_FUNC_DECL1(float,fm_logf);
+FM_FUNC_DECL1(float,fm_log2f);
+
 FM_FUNC_DECL1(double,fm_exp_alt);
 FM_FUNC_DECL1(float,fm_expf_alt);
 FM_FUNC_DECL1(double,fm_exp10_alt);
 FM_FUNC_DECL1(float,fm_exp10f_alt);
 FM_FUNC_DECL1(double,fm_log_alt);
+FM_FUNC_DECL1(float,fm_logf_alt);
 FM_FUNC_DECL1(double,fm_log2_alt);
+FM_FUNC_DECL1(float,fm_log2f_alt);
 
 #endif /* FASTERMATH_H */
 

@@ -25,7 +25,7 @@ TESTOBJ=$(TESTSRC:.c=.o)
 vpath %.c ../src
 vpath %.h ../include
 
-all: libfastermath.so libfastermath.a tester genspline
+all: genspline libfastermath.so libfastermath.a tester
 
 tester: $(TESTOBJ) libfastermath.a
 	$(LD) $(ARCHFLAGS) -o $@ $^ $(LDLIBS) $(TESTLIBS)

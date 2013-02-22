@@ -226,6 +226,24 @@ int main(int argc, char **argv)
     RUN_LOOP(xvalf,res1f,__builtin_log2f,float);
     DOUBLE_ERROR(res0f,res1f);
 
+    RUN_LOOP(xvalf,res2f,fm_log2f,float);
+    DOUBLE_ERROR(res0f,res2f);
+
+    RUN_LOOP(xvalf,res3f,fm_log2f_alt,float);
+    DOUBLE_ERROR(res0f,res3f);
+
+    RUN_LOOP(xvalf,res0f,logf,float);
+    printf("numreps %d\n", rep);
+
+    RUN_LOOP(xvalf,res1f,__builtin_logf,float);
+    DOUBLE_ERROR(res0f,res1f);
+
+    RUN_LOOP(xvalf,res2f,fm_logf,float);
+    DOUBLE_ERROR(res0f,res2f);
+
+    RUN_LOOP(xvalf,res3f,fm_logf_alt,float);
+    DOUBLE_ERROR(res0f,res3f);
+
     return 0;
 
 #if 0

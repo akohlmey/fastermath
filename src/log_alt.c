@@ -28,11 +28,11 @@ double fm_log2_alt(double x)
     hx = val.i1;
     
     /* extract exponent and subtract bias */
-    ipart = (((hx & 0x7ff00000) >> FM_DOUBLE_EBITS) - FM_DOUBLE_BIAS);
+    ipart = (((hx & FM_DOUBLE_EMASK) >> FM_DOUBLE_MBITS) - FM_DOUBLE_BIAS);
 
     /* mask out exponent to get the prefactor to 2**ipart */
-    hx &= 0x000fffff;
-    val.i1 = hx | 0x3ff00000;
+    hx &= FM_DOUBLE_MMASK;
+    val.i1 = hx | FM_DOUBLE_EZERO;
     x = val.f;
 
     /* table index */
@@ -40,7 +40,7 @@ double fm_log2_alt(double x)
 
     /* compute x value matching table index */
     val.i0 = 0;
-    val.i1 = 0x3ff00000 | (hx << FM_SPLINE_SHIFT);
+    val.i1 = FM_DOUBLE_EZERO | (hx << FM_SPLINE_SHIFT);
     b = (x - val.f) * fm_log_dinv;
     a = 1.0 - b;
 
@@ -73,11 +73,11 @@ double fm_log_alt(double x)
     hx = val.i1;
     
     /* extract exponent and subtract bias */
-    ipart = (((hx & 0x7ff00000) >> FM_DOUBLE_EBITS) - FM_DOUBLE_BIAS);
+    ipart = (((hx & FM_DOUBLE_EMASK) >> FM_DOUBLE_MBITS) - FM_DOUBLE_BIAS);
 
     /* mask out exponent to get the prefactor to 2**ipart */
-    hx &= 0x000fffff;
-    val.i1 = hx | 0x3ff00000;
+    hx &= FM_DOUBLE_MMASK;
+    val.i1 = hx | FM_DOUBLE_EZERO;
     x = val.f;
 
     /* table index */
@@ -85,7 +85,7 @@ double fm_log_alt(double x)
 
     /* compute x value matching table index */
     val.i0 = 0;
-    val.i1 = 0x3ff00000 | (hx << FM_SPLINE_SHIFT);
+    val.i1 = FM_DOUBLE_EZERO | (hx << FM_SPLINE_SHIFT);
     b = (x - val.f) * fm_log_dinv;
     a = 1.0 - b;
 
@@ -97,6 +97,103 @@ double fm_log_alt(double x)
 
     return ((double)ipart)*FM_DOUBLE_LOGEOF2 + y;
 }
+
+
+/* optimizer friendly implementation of log2f(x).
+ *
+ * strategy:
+ *
+ * split the argument into a product, 2**ipart * fpart
+ * by using bitmasks and integer math and then approximate
+ * log_2(fpart) from a spline table of logf(x) in [1.0:2.0[
+ */
+
+#include "logf_spline_tbl.c"
+
+float fm_log2f_alt(float x) 
+{
+    ufi_t val;
+    float a,b,y;
+    int32_t hx, ipart;
+
+    val.f = x;
+    hx = val.i;
+    
+    /* extract exponent and subtract bias */
+    ipart = (((hx & FM_FLOAT_EMASK) >> FM_FLOAT_MBITS) - FM_FLOAT_BIAS);
+
+    /* mask out exponent to get the prefactor to 2**ipart */
+    hx &= FM_FLOAT_MMASK;
+    val.i = hx | FM_FLOAT_EZERO;
+    x = val.f;
+
+    /* table index */
+    hx >>= FM_SPLINEF_SHIFT;
+
+    /* compute x value matching table index */
+    val.i = FM_FLOAT_EZERO | (hx << FM_SPLINE_SHIFT);
+    b = (x - val.f) * fm_logf_dinv;
+    a = 1.0 - b;
+
+    /* evaluate spline */
+    y = a * fm_logf_q1[hx] + b * fm_logf_q1[hx+1];
+    a = (a*a*a-a) * fm_logf_q2[hx];
+    b = (b*b*b-b) * fm_logf_q2[hx+1];
+    y += (a + b) * fm_logf_dsq6;
+
+    return ((float) ipart) + (y * FM_FLOAT_LOG2OFE);
+}
+
+
+/* optimizer friendly implementation of logf(x).
+ *
+ * strategy:
+ *
+ * split the argument into a product, 2**ipart * fpart
+ * by using bitmasks and integer math and then approximate
+ * log(fpart) from a spline table in [1.0:2.0[
+ */
+
+float fm_logf_alt(float x) 
+{
+    ufi_t val;
+    float a,b,y;
+    int32_t hx, ipart;
+
+    val.f = x;
+    hx = val.i;
+    
+    /* extract exponent and subtract bias */
+    ipart = (((hx & FM_FLOAT_EMASK) >> FM_FLOAT_MBITS) - FM_FLOAT_BIAS);
+
+    /* mask out exponent to get the prefactor to 2**ipart */
+    hx &= FM_FLOAT_MMASK;
+    val.i = hx | FM_FLOAT_EZERO;
+    x = val.f;
+
+    /* table index */
+    hx >>= FM_SPLINEF_SHIFT;
+
+    /* compute x value matching table index */
+    val.i = FM_FLOAT_EZERO | (hx << FM_SPLINEF_SHIFT);
+    b = (x - val.f) * fm_logf_dinv;
+    a = 1.0 - b;
+
+    /* evaluate spline */
+    y = a * fm_logf_q1[hx] + b * fm_logf_q1[hx+1];
+    a = (a*a*a-a) * fm_logf_q2[hx];
+    b = (b*b*b-b) * fm_logf_q2[hx+1];
+    y += (a + b) * fm_logf_dsq6;
+
+    return ((float)ipart)*FM_FLOAT_LOGEOF2 + y;
+}
+
+#if defined(LIBM_ALIAS)
+/* include aliases to the equivalent libm functions for use with LD_PRELOAD. */
+double log(double x) __attribute__ ((alias("fm_log_alt")));
+/* double log2(double x) __attribute__ ((alias("fm_log2"))); */
+#endif
+
 
 /* 
  * Local Variables:

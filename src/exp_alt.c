@@ -6,7 +6,6 @@
 #include "fastermath.h"
 #include "fm_internal.h"
 
-
 /* optimizer friendly implementation of exp(x).
  *
  * strategy:

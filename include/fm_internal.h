@@ -18,6 +18,10 @@ typedef union
     int32_t  i;
 }  ufi_t;
 #define FM_FLOAT_BIAS 127
+#define FM_FLOAT_EMASK 2139095040
+#define FM_FLOAT_MBITS 23
+#define FM_FLOAT_MMASK 8388607
+#define FM_FLOAT_EZERO 1065353216
 
 /* generate 2**num in floating point by bitshifting */
 #define FM_FLOAT_INIT_EXP(var,num)              \
@@ -32,7 +36,7 @@ typedef union
 }  udi_t;
 #define FM_DOUBLE_BIAS 1023
 #define FM_DOUBLE_EMASK 2146435072
-#define FM_DOUBLE_EBITS 20
+#define FM_DOUBLE_MBITS 20
 #define FM_DOUBLE_MMASK 1048575
 #define FM_DOUBLE_EZERO 1072693248
 
