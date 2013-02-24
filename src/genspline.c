@@ -42,7 +42,8 @@ static double  fm_log_dinv  = 0.0;
 
 
 /* build 12-bit spline table */
-#define FM_SPLINE_SHIFT 8
+#define FM_SPLINE_BITS 12
+#define FM_SPLINE_SHIFT (FM_DOUBLE_MBITS - FM_SPLINE_BITS)
 
 static void fm_init_log_spl() 
 {
@@ -52,13 +53,13 @@ static void fm_init_log_spl()
 
     FILE *fp;
 
-    max = 1<<(FM_DOUBLE_MBITS-FM_SPLINE_SHIFT);
+    max = 1 << FM_SPLINE_BITS;
 
     posix_memalign((void **)&fm_log_q1, _FM_ALIGN, (max+4)*sizeof(double));
     posix_memalign((void **)&fm_log_q2, _FM_ALIGN, (max+4)*sizeof(double));
 
     /* determine grid spacing and compute derived properties */
-    val.i1 = 0x3ff00000 | (1 << FM_SPLINE_SHIFT);
+    val.i1 = FM_DOUBLE_EZERO | (1 << FM_SPLINE_SHIFT);
     delta = val.f - 1.0;
     fm_log_dinv  = 1.0/delta;
     fm_log_dsq6  = delta*delta/6.0;
@@ -70,7 +71,7 @@ static void fm_init_log_spl()
 
     val.i0 = 0;
     for (i=0; i < max; ++i) {
-        val.i1 = 0x3ff00000 | (i << FM_SPLINE_SHIFT);
+        val.i1 = FM_DOUBLE_EZERO | (i << FM_SPLINE_SHIFT);
         x = val.f;
         fm_log_q1[i] = log(x);
     }
@@ -135,8 +136,9 @@ static float  fm_logf_dsq6  = 0.0f;
 static float  fm_logf_dinv  = 0.0f;
 
 
-/* build 12-bit spline table */
-#define FM_SPLINEF_SHIFT 11
+/* build 6-bit spline table */
+#define FM_SPLINEF_BITS 6
+#define FM_SPLINEF_SHIFT (FM_FLOAT_MBITS - FM_SPLINEF_BITS)
 
 static void fm_init_logf_spl() 
 {
@@ -146,7 +148,7 @@ static void fm_init_logf_spl()
 
     FILE *fp;
 
-    max = 1<<(FM_FLOAT_MBITS-FM_SPLINEF_SHIFT);
+    max = 1 << FM_SPLINEF_BITS;
 
     posix_memalign((void **)&fm_logf_q1, _FM_ALIGN, (max+4)*sizeof(float));
     posix_memalign((void **)&fm_logf_q2, _FM_ALIGN, (max+4)*sizeof(float));
@@ -163,7 +165,7 @@ static void fm_init_logf_spl()
            delta, (max+2)*sizeof(float)/512.0f);
 
     for (i=0; i < max; ++i) {
-        val.i = 0x3ff00000 | (i << FM_SPLINEF_SHIFT);
+        val.i = FM_FLOAT_EZERO | (i << FM_SPLINEF_SHIFT);
         x = val.f;
         fm_logf_q1[i] = logf(x);
     }
