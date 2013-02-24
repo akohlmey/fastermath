@@ -257,7 +257,7 @@ float fm_log2f(float x)
 float fm_logf(float x) 
 {
     ufi_t val;
-    float z,px,qx;
+    float z,px;
     int32_t ipart,fpart;
 
     val.f = x;
@@ -349,9 +349,9 @@ float fm_log10f(float x)
     return z;
 }
 
-#if defined(LIBM_ALIAS)
+#if defined(LIBM_ALIAS) && !defined(USE_LOG_SPLINE)
 /* include aliases to the equivalent libm functions for use with LD_PRELOAD. */
-/* double log(double x) __attribute__ ((alias("fm_log"))); */
+double log(double x) __attribute__ ((alias("fm_log")));
 double log2(double x) __attribute__ ((alias("fm_log2")));
 double log10(double x) __attribute__ ((alias("fm_log10")));
 float log2f(float x) __attribute__ ((alias("fm_log2f")));
