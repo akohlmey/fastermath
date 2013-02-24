@@ -28,10 +28,10 @@ vpath %.h ../include
 all: genspline libfastermath.so libfastermath.a fastermath.so tester
 
 tester: $(TESTOBJ) libfastermath.a
-	$(LD) $(ARCHFLAGS) -o $@ $^ $(LDLIBS) $(TESTLIBS)
+	$(LD) $(ARCHFLAGS) -o $@ $^ $(TESTLIBS) $(LDLIBS)
 
 genspline: genspline.c
-	$(LD) $(ARCHFLAGS) $(CFLAGS) -o $@ $^ $(TESTLIBS)
+	$(LD) $(ARCHFLAGS) $(CFLAGS) -o $@ $^ -lm
 
 libfastermath.so: $(LIBOBJ)
 	$(LD) $(LDFLAGS) -o $@ $(LIBOBJ)
