@@ -229,10 +229,8 @@ int main(int argc, char **argv)
     RUN_LOOP(xval,res2,fm_log10,double);
     DOUBLE_ERROR(res0,res2);
 
-#if 0
     RUN_LOOP(xval,res3,fm_log10_alt,double);
     DOUBLE_ERROR(res0,res3);
-#endif
 
     RUN_LOOP(xvalf,res0f,log2f,float);
     printf("numreps %d\n", rep);
@@ -267,10 +265,19 @@ int main(int argc, char **argv)
     RUN_LOOP(xvalf,res2f,fm_log10f,float);
     DOUBLE_ERROR(res0f,res2f);
 
-#if 0
-    RUN_LOOP(xvalf,res3f,fm_logf_alt,float);
+    RUN_LOOP(xvalf,res3f,fm_log10f_alt,float);
     DOUBLE_ERROR(res0f,res3f);
-#endif
+
+    free(xval);
+    free(res0);
+    free(res1);
+    free(res2);
+    free(res3);
+    free(xvalf);
+    free(res0f);
+    free(res1f);
+    free(res2f);
+    free(res3f);
 
     return 0;
 

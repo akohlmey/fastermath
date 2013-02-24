@@ -10,6 +10,9 @@
 
 /* internal definitions for the fastermath library */
 
+/* favor spline table alternatives of log() functions */
+#define USE_LOG_SPLINE 1
+
 /* IEEE 754 single precision floating point data manipulation */
 typedef union 
 {
