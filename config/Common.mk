@@ -25,7 +25,7 @@ TESTOBJ=$(TESTSRC:.c=.o)
 vpath %.c ../src
 vpath %.h ../include
 
-all: genspline libfastermath.so libfastermath.a tester
+all: genspline libfastermath.so libfastermath.a fastermath.so tester
 
 tester: $(TESTOBJ) libfastermath.a
 	$(LD) $(ARCHFLAGS) -o $@ $^ $(LDLIBS) $(TESTLIBS)
@@ -38,6 +38,9 @@ libfastermath.so: $(LIBOBJ)
 
 libfastermath.a: $(LIBOBJ)
 	$(AR) $(ARFLAGS) $@ $(LIBOBJ)
+
+fastermath.so: wrapper.c libfastermath.a
+	$(LD) $(LDFLAGS) $(CFLAGS) -o $@ $< libfastermath.a
 
 config.c: config-template.c
 	sed -e 's,@ARCH@,$(ARCH),' 		\
