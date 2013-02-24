@@ -33,19 +33,6 @@ static const double fm_log2_q[] __attribute__ ((aligned(_FM_ALIGN))) = {
     2.31251620126765340583e1
 };
 
-static const double fm_log2_r[] __attribute__ ((aligned(_FM_ALIGN))) = {
-    -7.89580278884799154124e-1,
-     1.63866645699558079767e1,
-    -6.41409952958715622951e1
-};
-
-static const double fm_log2_s[] __attribute__ ((aligned(_FM_ALIGN))) = {
-/*   1.00000000000000000000e0, */
-    -3.56722798256324312549e1,
-     3.12093766372244180303e2,
-    -7.69691943550460008604e2
-};
-
 double fm_log2(double x) 
 {
     udi_t val;
@@ -143,6 +130,58 @@ double fm_log(double x)
     z = x*x;
     z = x*(z*px/qx) - 0.5*z + x;
     z += ((double)ipart)*FM_DOUBLE_LOGEOF2;
+    return z;
+}
+
+
+double fm_log10(double x) 
+{
+    udi_t val;
+    double z,px,qx;
+    int32_t ipart,fpart;
+
+    val.f = x;
+    /* extract exponent and part of the mantissa */
+    fpart = val.i1 & FM_DOUBLE_MMASK;
+    ipart = val.i1 & FM_DOUBLE_EMASK;
+
+    /* set exponent to 0 to get the prefactor to 2**ipart */
+    fpart |= FM_DOUBLE_EZERO;
+    val.i1 = fpart;
+    x = val.f;
+
+    /* extract exponent */
+    ipart >>= FM_DOUBLE_MBITS;
+    ipart -= FM_DOUBLE_BIAS;
+
+    /* the polynomial is computed for sqrt(0.5) < x < sqrt(2),
+       but we have the mantissa in the interval 1 < x < 2.
+       adjust by dividing x by 2 and incrementing ipart, if needed. */
+    if (x > FM_DOUBLE_SQRT2) {
+        x *= 0.5;
+        ++ipart;
+    }
+
+    /* use polynomial approximation for log(1+x) */
+    x -= 1.0;
+
+    px =        fm_log2_p[0];
+    px = px*x + fm_log2_p[1];
+    px = px*x + fm_log2_p[2];
+    px = px*x + fm_log2_p[3];
+    px = px*x + fm_log2_p[4];
+    px = px*x + fm_log2_p[5];
+
+    qx =    x + fm_log2_q[0];
+    qx = qx*x + fm_log2_q[1];
+    qx = qx*x + fm_log2_q[2];
+    qx = qx*x + fm_log2_q[3];
+    qx = qx*x + fm_log2_q[4];
+
+    z = x*x;
+    z = x*(z*px/qx) - 0.5*z + x;
+    z *= FM_DOUBLE_LOG10OFE;
+    z += ((double)ipart)*FM_DOUBLE_LOG10OF2;
     return z;
 }
 
@@ -262,10 +301,62 @@ float fm_logf(float x)
     return z;
 }
 
+float fm_log10f(float x) 
+{
+    ufi_t val;
+    float z,px;
+    int32_t ipart,fpart;
+
+    val.f = x;
+    /* extract exponent and part of the mantissa */
+    fpart = val.i & FM_FLOAT_MMASK;
+    ipart = val.i & FM_FLOAT_EMASK;
+
+    /* set exponent to 0 to get the prefactor to 2**ipart */
+    fpart |= FM_FLOAT_EZERO;
+    val.i = fpart;
+    x = val.f;
+
+    /* extract exponent */
+    ipart >>= FM_FLOAT_MBITS;
+    ipart -= FM_FLOAT_BIAS;
+
+    /* the polynomial is computed for sqrt(0.5) < x < sqrt(2),
+       but we have the mantissa in the interval 1 < x < 2.
+       adjust by dividing x by 2 and incrementing ipart, if needed. */
+    if (x > FM_FLOAT_SQRT2) {
+        x *= 0.5;
+        ++ipart;
+    }
+
+    /* use polynomial approximation for log(1+x) */
+    x -= 1.0;
+
+    px =        fm_log2f_p[0];
+    px = px*x + fm_log2f_p[1];
+    px = px*x + fm_log2f_p[2];
+    px = px*x + fm_log2f_p[3];
+    px = px*x + fm_log2f_p[4];
+    px = px*x + fm_log2f_p[5];
+    px = px*x + fm_log2f_p[6];
+    px = px*x + fm_log2f_p[7];
+    px = px*x + fm_log2f_p[8];
+
+    z = x*x;
+    z = x*z*px - 0.5*z + x;
+    z *= FM_FLOAT_LOG10OFE;
+    z += ((float)ipart)*FM_FLOAT_LOG10OF2;
+    return z;
+}
+
 #if defined(LIBM_ALIAS)
 /* include aliases to the equivalent libm functions for use with LD_PRELOAD. */
 /* double log(double x) __attribute__ ((alias("fm_log"))); */
 double log2(double x) __attribute__ ((alias("fm_log2")));
+double log10(double x) __attribute__ ((alias("fm_log10")));
+float log2f(float x) __attribute__ ((alias("fm_log2f")));
+float logf(float x) __attribute__ ((alias("fm_logf")));
+float log10f(float x) __attribute__ ((alias("fm_log10f")));
 #endif
 
 /* 

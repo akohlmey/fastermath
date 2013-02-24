@@ -3,7 +3,7 @@
 ALIGNMENT=16
 CC=gcc -m32
 CPPFLAGS=
-ARCHFLAGS= -march=i686 -mpc64 -mfpmath=387 -g
+ARCHFLAGS= -march=i686 -mpc64 -ffloat-store -mfpmath=387 -g
 GENFLAGS=  -falign-functions=$(ALIGNMENT) -fPIC -fno-builtin
 OPTFLAGS=  -O
 WARNFLAGS= -Wall -W
