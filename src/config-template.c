@@ -6,5 +6,7 @@ static const char config[] =
 "ARCHFLAGS= @ARCHFLAGS@\n"
 "GENFLAGS=  @GENFLAGS@\n"
 "OPTFLAGS=  @OPTFLAGS@\n"
-"WARNFLAGS= @WARNFLAGS@";
+"WARNFLAGS= @WARNFLAGS@\n"
+"LDLIBS=    @LDLIBS@\n"
+"TESTLIBS=  @TESTLIBS@\n";
 

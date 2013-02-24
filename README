@@ -15,23 +15,56 @@ endian IEEE-754 single and double precision math.
 Installation
 ============
 
-This package is x86  and Linux specific and  makes heavy use of advanced
-features of the GNU toolchain  and thus requires a somewhat recent GNU C
-compiler, GNU binutils and GNU Make to be installed. Specifically:
- - GNU make
- - GNU C compiler
- - GNU binutils
+This package is x86 and Linux specific and  makes heavy use of advanced
+features of the GNU compiler toolchain and thus requires a somewhat recent
+GNU C compiler (tested with 4.4.x to 4.7.x) or a compatible Intel compiler
+(tested with 13.0.x).
 
-To compile simply type "make". This should produce two
-libraries libfastermath.so and libfastermath.a. Those
-two libraries and the header fastermath.h should be copied
-to a suitable location, e.g. /usr/local/lib or /usr/local/lib64
-and /usr/local/include, respectively.
+To compile simply type "make <configuration>". This will read a configuration
+file in the directory config/ and will create an object directory for it and
+compile all binaries in it. The config file naming convention is:
+<bitness>-<fpmode>-<compiler>.inc
+If you type "make" without any target will list all availalable configurations
+that are compatible with the current platform. Typing "make all" will try to
+compile all of them.
 
+Compilation should produce two libraries (libfastermath.so & libfastermath.a),
+two utility programs (genspline & tester) and a shared object (fastermath.so)
+in the configuration specific object directory.
+
+If the CPPFLAGS contains the flag -DLIBM_ALIAS the libraries contain entries
+which alias the internal functions directly to the lib counterparts.
 
 Usage
 =====
 
-- 
+The library contains math functions that are mostly equivalent with their
+counterparts in libm. They have the same name, but the string 'fm_' prepended.
+So renaming the functions calls, e.g. log(), with the library version, i.e.
+fm_log() will call this library instead of libm. The fastermath.so shared
+object would redirect function calls from the libm version to the fastermath
+variant when the shared object is activated using LD_PRELOAD.
 
+How it works
+============
+
+The normal math functions contain a lot of tests for over- and underflow 
+and go through a lot of pains to handle borderline cases and maximize
+accuracy. The functions in the fastermath library skip those, since in
+most cases, those are not needed, but const a significant amount CPU
+time. Similarly, the streamlined code can be optimized better by compilers.
+In the case of logarithms, it has been found that using a cubic spline
+interpolation is significantly faster than using the usual rational 
+function expansion from math libraries like cephes or glibc.
+
+How fast is it?
+===============
+
+That depends on the compiler, the code and the CPU. Speedup on 64-bit CPUs
+is usually higher, speedup on Intel CPUs is often higher than on AMD CPUs.
+Exponentials are 1.5-3 times faster, logarithms 2-4 times faster.
+When you have well vectorizing code (like the tester in this package), the
+Intel compiler can vectorize the loops and then use the short vector math
+library (SVML), which can handle multiple function calls concurrently and
+achieve much higher speedup.
 

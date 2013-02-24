@@ -33,10 +33,16 @@ int main(int argc, char **argv)
     int num, rep, i, j;
     unsigned int seed;
 
-    puts("\n=========================\nfastermath test and benchmark");
+    puts("\n============================="
+         "\nfastermath test and benchmark"
+         "\n=============================");
     puts(config);
 
-    if (argc < 3) return -1;
+    if (argc < 3) {
+        printf("usage %s <num tests> <num reps> [<rng seed>]\n",argv[0]);
+        return -1;
+    }
+
     num = atoi(argv[1]);
     rep = atoi(argv[2]);
     if (argc < 4) {

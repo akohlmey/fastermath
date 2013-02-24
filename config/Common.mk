@@ -50,6 +50,8 @@ config.c: config-template.c
 		-e 's,@GENFLAGS@,$(GENFLAGS),'	\
 		-e 's,@OPTFLAGS@,$(OPTFLAGS),'	\
 		-e 's,@WARNFLAGS@,$(WARNFLAGS),'\
+		-e 's,@LDLIBS@,$(LDLIBS),'	\
+		-e 's,@TESTLIBS@,$(TESTLIBS),'	\
 		$< > $@
 
 .depend: $(LIBSRC) $(TESTSRC) config.c
