@@ -1,3 +1,32 @@
+/* 
+   Copyright (c) 2012,2013   Axel Kohlmeyer <akohlmey@gmail.com> 
+   All rights reserved.
+
+   Redistribution and use in source and binary forms, with or without
+   modification, are permitted provided that the following conditions
+   are met:
+
+   * Redistributions of source code must retain the above copyright
+     notice, this list of conditions and the following disclaimer.
+   * Redistributions in binary form must reproduce the above copyright
+     notice, this list of conditions and the following disclaimer in the
+     documentation and/or other materials provided with the distribution.
+   * Neither the name of the <organization> nor the
+     names of its contributors may be used to endorse or promote products
+     derived from this software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ARE DISCLAIMED. IN NO EVENT SHALL <COPYRIGHT HOLDER> BE LIABLE FOR ANY
+DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
+THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+*/
+
 /* build static spline tables in double and single precision */
 
 #include "fastermath.h"
@@ -6,6 +35,36 @@
 #include <math.h>
 #include <stdlib.h>
 #include <stdio.h>
+
+static const char copyright[] =
+"/* \n"
+"   Copyright (c) 2012,2013   Axel Kohlmeyer <akohlmey@gmail.com> \n"
+"   All rights reserved.\n"
+"\n"
+"   Redistribution and use in source and binary forms, with or without\n"
+"   modification, are permitted provided that the following conditions\n"
+"   are met:\n"
+"\n"
+"   * Redistributions of source code must retain the above copyright\n"
+"     notice, this list of conditions and the following disclaimer.\n"
+"   * Redistributions in binary form must reproduce the above copyright\n"
+"     notice, this list of conditions and the following disclaimer in the\n"
+"     documentation and/or other materials provided with the distribution.\n"
+"   * Neither the name of the <organization> nor the\n"
+"     names of its contributors may be used to endorse or promote products\n"
+"     derived from this software without specific prior written permission.\n"
+"\n"
+"THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS \"AS IS\"\n"
+"AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE\n"
+"IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE\n"
+"ARE DISCLAIMED. IN NO EVENT SHALL <COPYRIGHT HOLDER> BE LIABLE FOR ANY\n"
+"DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES\n"
+"(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;\n"
+"LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND\n"
+"ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT\n"
+"(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF\n"
+"THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.\n"
+"*/\n";
 
 /* code to generate double precision spline tables */
 
@@ -79,6 +138,8 @@ static void fm_init_log_spl()
     fm_spline(delta,fm_log_q1,max+1,1.0,0.5,fm_log_q2);
 
     fp = fopen("log_spline_tbl.c","w");
+    fputs(copyright,fp);
+
     fprintf(fp,"\n#define FM_SPLINE_SHIFT %d\n",FM_SPLINE_SHIFT);
     fprintf(fp,"static const double fm_log_dinv = % 025.20e;\n", fm_log_dinv);
     fprintf(fp,"static const double fm_log_dsq6 = % 025.20e;\n", fm_log_dsq6);
@@ -173,6 +234,8 @@ static void fm_init_logf_spl()
     fm_splinef(delta,fm_logf_q1,max+1,1.0f,0.5f,fm_logf_q2);
 
     fp = fopen("logf_spline_tbl.c","w");
+    fputs(copyright,fp);
+
     fprintf(fp,"\n#define FM_SPLINEF_SHIFT %d\n",FM_SPLINEF_SHIFT);
     fprintf(fp,"static const float fm_logf_dinv = % 015.10e;\n", fm_logf_dinv);
     fprintf(fp,"static const float fm_logf_dsq6 = % 015.10e;\n", fm_logf_dsq6);
