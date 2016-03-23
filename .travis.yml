@@ -4,4 +4,5 @@ compiler:
   - gcc
 
 script:
-  - make 64bit-fpu-gcc
+  - make 64bit-fpu-gcc  && ./Obj_64bit-fpu-gcc/tester  2000 2000
+  - make 64bit-sse4-gcc && ./Obj_64bit-sse4-gcc/tester 2000 2000
