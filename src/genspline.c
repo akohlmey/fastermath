@@ -118,7 +118,7 @@ static void fm_init_log_spl()
     posix_memalign((void **)&fm_log_q2, _FM_ALIGN, (max+4)*sizeof(double));
 
     /* determine grid spacing and compute derived properties */
-    val.i1 = FM_DOUBLE_EZERO | (1 << FM_SPLINE_SHIFT);
+    val.s.i1 = FM_DOUBLE_EZERO | (1 << FM_SPLINE_SHIFT);
     delta = val.f - 1.0;
     fm_log_dinv  = 1.0/delta;
     fm_log_dsq6  = delta*delta/6.0;
@@ -128,9 +128,9 @@ static void fm_init_log_spl()
            FM_DOUBLE_MBITS-FM_SPLINE_SHIFT,
            delta, (max+2)*sizeof(double)/512.0);
 
-    val.i0 = 0;
+    val.s.i0 = 0;
     for (i=0; i < max; ++i) {
-        val.i1 = FM_DOUBLE_EZERO | (i << FM_SPLINE_SHIFT);
+        val.s.i1 = FM_DOUBLE_EZERO | (i << FM_SPLINE_SHIFT);
         x = val.f;
         fm_log_q1[i] = log(x);
     }

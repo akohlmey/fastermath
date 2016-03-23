@@ -53,22 +53,22 @@ double fm_log2(double x)
     int32_t hx, ipart;
 
     val.f = x;
-    hx = val.i1;
+    hx = val.s.i1;
     
     /* extract exponent and subtract bias */
     ipart = (((hx & FM_DOUBLE_EMASK) >> FM_DOUBLE_MBITS) - FM_DOUBLE_BIAS);
 
     /* mask out exponent to get the prefactor to 2**ipart */
     hx &= FM_DOUBLE_MMASK;
-    val.i1 = hx | FM_DOUBLE_EZERO;
+    val.s.i1 = hx | FM_DOUBLE_EZERO;
     x = val.f;
 
     /* table index */
     hx >>= FM_SPLINE_SHIFT;
 
     /* compute x value matching table index */
-    val.i0 = 0;
-    val.i1 = FM_DOUBLE_EZERO | (hx << FM_SPLINE_SHIFT);
+    val.s.i0 = 0;
+    val.s.i1 = FM_DOUBLE_EZERO | (hx << FM_SPLINE_SHIFT);
     b = (x - val.f) * fm_log_dinv;
     a = 1.0 - b;
 
@@ -98,22 +98,22 @@ double fm_log(double x)
     int32_t hx, ipart;
 
     val.f = x;
-    hx = val.i1;
+    hx = val.s.i1;
     
     /* extract exponent and subtract bias */
     ipart = (((hx & FM_DOUBLE_EMASK) >> FM_DOUBLE_MBITS) - FM_DOUBLE_BIAS);
 
     /* mask out exponent to get the prefactor to 2**ipart */
     hx &= FM_DOUBLE_MMASK;
-    val.i1 = hx | FM_DOUBLE_EZERO;
+    val.s.i1 = hx | FM_DOUBLE_EZERO;
     x = val.f;
 
     /* table index */
     hx >>= FM_SPLINE_SHIFT;
 
     /* compute x value matching table index */
-    val.i0 = 0;
-    val.i1 = FM_DOUBLE_EZERO | (hx << FM_SPLINE_SHIFT);
+    val.s.i0 = 0;
+    val.s.i1 = FM_DOUBLE_EZERO | (hx << FM_SPLINE_SHIFT);
     b = (x - val.f) * fm_log_dinv;
     a = 1.0 - b;
 
@@ -143,22 +143,22 @@ double fm_log10(double x)
     int32_t hx, ipart;
 
     val.f = x;
-    hx = val.i1;
+    hx = val.s.i1;
     
     /* extract exponent and subtract bias */
     ipart = (((hx & FM_DOUBLE_EMASK) >> FM_DOUBLE_MBITS) - FM_DOUBLE_BIAS);
 
     /* mask out exponent to get the prefactor to 2**ipart */
     hx &= FM_DOUBLE_MMASK;
-    val.i1 = hx | FM_DOUBLE_EZERO;
+    val.s.i1 = hx | FM_DOUBLE_EZERO;
     x = val.f;
 
     /* table index */
     hx >>= FM_SPLINE_SHIFT;
 
     /* compute x value matching table index */
-    val.i0 = 0;
-    val.i1 = FM_DOUBLE_EZERO | (hx << FM_SPLINE_SHIFT);
+    val.s.i0 = 0;
+    val.s.i1 = FM_DOUBLE_EZERO | (hx << FM_SPLINE_SHIFT);
     b = (x - val.f) * fm_log_dinv;
     a = 1.0 - b;
 

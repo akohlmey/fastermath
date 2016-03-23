@@ -70,12 +70,12 @@ double fm_log2_alt(double x)
 
     val.f = x;
     /* extract exponent and part of the mantissa */
-    fpart = val.i1 & FM_DOUBLE_MMASK;
-    ipart = val.i1 & FM_DOUBLE_EMASK;
+    fpart = val.s.i1 & FM_DOUBLE_MMASK;
+    ipart = val.s.i1 & FM_DOUBLE_EMASK;
 
     /* set exponent to 0 to get the prefactor to 2**ipart */
     fpart |= FM_DOUBLE_EZERO;
-    val.i1 = fpart;
+    val.s.i1 = fpart;
     x = val.f;
 
     /* extract exponent */
@@ -120,12 +120,12 @@ double fm_log_alt(double x)
 
     val.f = x;
     /* extract exponent and part of the mantissa */
-    fpart = val.i1 & FM_DOUBLE_MMASK;
-    ipart = val.i1 & FM_DOUBLE_EMASK;
+    fpart = val.s.i1 & FM_DOUBLE_MMASK;
+    ipart = val.s.i1 & FM_DOUBLE_EMASK;
 
     /* set exponent to 0 to get the prefactor to 2**ipart */
     fpart |= FM_DOUBLE_EZERO;
-    val.i1 = fpart;
+    val.s.i1 = fpart;
     x = val.f;
 
     /* extract exponent */
@@ -171,12 +171,12 @@ double fm_log10_alt(double x)
 
     val.f = x;
     /* extract exponent and part of the mantissa */
-    fpart = val.i1 & FM_DOUBLE_MMASK;
-    ipart = val.i1 & FM_DOUBLE_EMASK;
+    fpart = val.s.i1 & FM_DOUBLE_MMASK;
+    ipart = val.s.i1 & FM_DOUBLE_EMASK;
 
     /* set exponent to 0 to get the prefactor to 2**ipart */
     fpart |= FM_DOUBLE_EZERO;
-    val.i1 = fpart;
+    val.s.i1 = fpart;
     x = val.f;
 
     /* extract exponent */
