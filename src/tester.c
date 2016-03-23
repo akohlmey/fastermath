@@ -53,6 +53,7 @@ static double wallclock(const double * __restrict ref)
     return ref ? (ret - *ref) : ret;
 }
 
+
 int main(int argc, char **argv)
 {
     double *xval, *res0, *res1, *res2, *res3;
@@ -302,6 +303,77 @@ int main(int argc, char **argv)
     RUN_LOOP(xvalf,res3f,fm_log10f_alt,float);
     DOUBLE_ERROR(res0f,res3f);
 
+    puts("-------------------------\ntesting error function and complement");
+    err = sumerr = 0.0;
+    xscale = 1.0 / ((double) RAND_MAX);
+    start = wallclock(NULL);
+    /* random numbers distributed between -4.0 and 6.0 */ 
+    for (i=0; i < num; ++i) {
+        double r1,r2,rsum;
+        r1 = xscale * ((double) rand());
+        r2 = xscale * ((double) rand());
+        rsum = 0.5*(r1+r2);
+        xval[i] = 10.0 * rsum - 4.0;
+        xvalf[i] = (float) xval[i];
+        err += xval[i];
+        sumerr += xval[i]*xval[i];
+    }
+    err /= (double) num;
+    sumerr /= (double) num;
+    printf("time/set for %d x-values : %8.4gus\n", num, wallclock(&start)/num);
+    xscale = 1.0/(rep*num);
+
+    RUN_LOOP(xval,res0,erf,double);
+    printf("numreps %d\n", rep);
+
+    RUN_LOOP(xval,res1,__builtin_erf,double);
+    DOUBLE_ERROR(res0,res1);
+
+    RUN_LOOP(xval,res2,1.0-erfc,double);
+    DOUBLE_ERROR(res0,res2);
+#if 0
+    RUN_LOOP(xval,res3,fm_log2_alt,double);
+    DOUBLE_ERROR(res0,res3);
+#endif
+
+    RUN_LOOP(xval,res0,erfc,double);
+    printf("numreps %d\n", rep);
+
+    RUN_LOOP(xval,res1,__builtin_erfc,double);
+    DOUBLE_ERROR(res0,res1);
+
+    RUN_LOOP(xval,res2,1.0-erf,double);
+    DOUBLE_ERROR(res0,res2);
+
+    RUN_LOOP(xval,res3,fm_erfc,double);
+    DOUBLE_ERROR(res0,res3);
+
+
+    RUN_LOOP(xvalf,res0f,erff,float);
+    printf("numreps %d\n", rep);
+
+    RUN_LOOP(xvalf,res1f,__builtin_erff,float);
+    DOUBLE_ERROR(res0f,res1f);
+
+    RUN_LOOP(xvalf,res2f,1.0f-erfcf,float);
+    DOUBLE_ERROR(res0f,res2f);
+#if 0
+    RUN_LOOP(xvalf,res3f,fm_log2f_alt,float);
+    DOUBLE_ERROR(res0f,res3f);
+#endif
+    RUN_LOOP(xvalf,res0f,erfcf,float);
+    printf("numreps %d\n", rep);
+
+    RUN_LOOP(xvalf,res1f,__builtin_erfcf,float);
+    DOUBLE_ERROR(res0f,res1f);
+
+    RUN_LOOP(xvalf,res2f,1.0f-erff,float);
+    DOUBLE_ERROR(res0f,res2f);
+
+    RUN_LOOP(xvalf,res3f,fm_erfcf,float);
+    DOUBLE_ERROR(res0f,res3f);
+
+    
     free(xval);
     free(res0);
     free(res1);

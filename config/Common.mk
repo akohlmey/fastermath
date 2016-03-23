@@ -17,7 +17,7 @@ endif
 
 DEFS=-I../include -I. -D_FM_INTERNAL -D_FM_ALIGN=$(ALIGNMENT)
 CFLAGS= $(CPPFLAGS) $(DEFS) $(ARCHFLAGS) $(GENFLAGS) $(OPTFLAGS) $(WARNFLAGS)
-LIBSRC=exp.c exp_alt.c log.c log_alt.c
+LIBSRC=exp.c exp_alt.c log.c log_alt.c erfc.c
 LIBOBJ=$(LIBSRC:.c=.o)
 TESTSRC=tester.c
 TESTOBJ=$(TESTSRC:.c=.o)

@@ -75,6 +75,9 @@ FM_FUNC_DECL1(float,fm_logf_alt);
 FM_FUNC_DECL1(float,fm_log2f_alt);
 FM_FUNC_DECL1(float,fm_log10f_alt);
 
+FM_FUNC_DECL1(double,fm_erfc);
+FM_FUNC_DECL1(float,fm_erfcf);
+
 #endif /* FASTERMATH_H */
 
 /* 
