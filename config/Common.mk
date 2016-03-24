@@ -21,11 +21,16 @@ LIBSRC=exp.c exp_alt.c log.c log_alt.c erfc.c
 LIBOBJ=$(LIBSRC:.c=.o)
 TESTSRC=tester.c
 TESTOBJ=$(TESTSRC:.c=.o)
+GENPLSRC=genplot.c
+GENPLOBJ=$(GENPLSRC:.c=.o)
 
 vpath %.c ../src
 vpath %.h ../include
 
-all: genspline libfastermath.so libfastermath.a fastermath.so tester
+all: genspline libfastermath.so libfastermath.a fastermath.so tester genplot
+
+genplot: $(GENPLOBJ) libfastermath.a
+	$(LD) $(ARCHFLAGS) -o $@ $^ $(TESTLIBS) $(LDLIBS)
 
 tester: $(TESTOBJ) libfastermath.a
 	$(LD) $(ARCHFLAGS) -o $@ $^ $(TESTLIBS) $(LDLIBS)
@@ -54,7 +59,7 @@ config.c: config-template.c
 		-e 's,@TESTLIBS@,$(TESTLIBS),'	\
 		$< > $@
 
-.depend: $(LIBSRC) $(TESTSRC) config.c
+.depend: $(LIBSRC) $(TESTSRC) $(GENPLSRC) config.c
 	$(CC) $(DEFS) $(CPPFLAGS) -MM $^ > $@
 
 .PHONY: all default
