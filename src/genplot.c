@@ -368,7 +368,7 @@ int main(int argc, char **argv)
 
     fputs("-------------------------\n"
           "plotting erfc(x)",stdout);
-    xscale = 20000.0 / ((double) 2*num);
+    xscale = 50.0;
 
     fp = fopen("erfc.dat","w");
     fputc('.',stdout);
