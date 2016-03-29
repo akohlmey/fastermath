@@ -598,19 +598,8 @@ double fm_erfc(double x)
 
     const double expm2 = my_exp(-x*x);
 
-    if (x >= 0) {
-        if (x > 50) { /* continued-fraction expansion is faster */
-            const double ispi = 0.56418958354775628694807945156*expm2; /* 1 / sqrt(pi)*/
-            if (x > 5e7) /* 1-term expansion, important to avoid overflow */
-                return ispi / x;
-            /* 5-term expansion (rely on compiler for CSE), simplified from:
-               ispi / (x+0.5/(x+1/(x+1.5/(x+2/x))))  */
-            return ispi*((x*x) * (x*x+4.5) + 2) / (x * ((x*x) * (x*x+5) + 3.75));
-        }
-        return erfcx_y100(400/(4+x))*expm2;
-    }
-    else
-        return x < -6.1 ? 2.0 : 2.0 - erfcx_y100(400/(4-x)) * expm2;
+    if (x >= 0) return (x > 26.64) ? 0.0 : erfcx_y100(400/(4+x)) * expm2;
+    else return (x < -6.1) ? 2.0 : 2.0 - erfcx_y100(400/(4-x)) * expm2;
 } /* erfc() */
 
 /* optimizer friendly implementation of exp2f(x).
