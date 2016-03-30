@@ -305,15 +305,15 @@ int main(int argc, char **argv)
 
     puts("-------------------------\ntesting error function and complement");
     err = sumerr = 0.0;
-    xscale = 1.0 / ((double) RAND_MAX);
+    xscale = 16.0 / ((double) RAND_MAX);
     start = wallclock(NULL);
-    /* random numbers distributed between -4.0 and 6.0 */ 
+    /* random numbers distributed between -6.0 and 26.0 */ 
     for (i=0; i < num; ++i) {
         double r1,r2,rsum;
         r1 = xscale * ((double) rand());
         r2 = xscale * ((double) rand());
-        rsum = 0.5*(r1+r2);
-        xval[i] = 10.0 * rsum - 4.0;
+        rsum = (r1+r2);
+        xval[i] = rsum - 6.0;
         xvalf[i] = (float) xval[i];
         err += xval[i];
         sumerr += xval[i]*xval[i];
@@ -329,7 +329,7 @@ int main(int argc, char **argv)
     RUN_LOOP(xval,res1,__builtin_erf,double);
     DOUBLE_ERROR(res0,res1);
 
-    RUN_LOOP(xval,res2,1.0-erfc,double);
+    RUN_LOOP(xval,res2,(1.0) - erfc,double);
     DOUBLE_ERROR(res0,res2);
 #if 0
     RUN_LOOP(xval,res3,fm_log2_alt,double);
@@ -342,7 +342,7 @@ int main(int argc, char **argv)
     RUN_LOOP(xval,res1,__builtin_erfc,double);
     DOUBLE_ERROR(res0,res1);
 
-    RUN_LOOP(xval,res2,1.0-erf,double);
+    RUN_LOOP(xval,res2,(1.0) - erf,double);
     DOUBLE_ERROR(res0,res2);
 
     RUN_LOOP(xval,res3,fm_erfc,double);
