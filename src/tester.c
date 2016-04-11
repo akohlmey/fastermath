@@ -122,7 +122,7 @@ int main(int argc, char **argv)
 #define DOUBLE_ERROR(ref,res)                           \
     sumerr = 0.0;                                       \
     for (i=0; i < num; ++i) {                           \
-        sumerr += fabs(((double)res[i]- (double)ref[i])/((double) ref[i])); \
+        if (ref[i] != 0.0) sumerr += fabs(((double)res[i]- (double)ref[i])/((double) ref[i])); \
     }                                                   \
     printf("avgerr  %.6g\n", sumerr/((double) num))
 
