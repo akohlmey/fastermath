@@ -24,3 +24,6 @@ Obj_*
 # executables
 tester
 testerf
+
+# plot output
+/*.dat
