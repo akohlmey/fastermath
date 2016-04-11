@@ -410,14 +410,48 @@ int main(int argc, char **argv)
            (erfc(-10.0))/(1.0-erfc(10.0)) - 2.0);
     printf("fm_erfc(-10.0)/fm_erfc(10.0) - 2.0 = %.20g\n",
            fm_erfc(-10.0)/(1.0-fm_erfc(10.0)) -2.0 );
+
+
+    fputs("-------------------------\n"
+          "plotting erfcf(x)",stdout);
+    xscale = 50.0;
+
+    fp = fopen("erfcf.dat","w");
+    fputc('.',stdout);
+    fprintf(fp,"# %d: x, erfcf(x), fm_erfcf(x), relative error\n",num);
+    fputc('.',stdout);
+    /* first half -oo to 0 */
+    for (i=1; i < num; ++i) {
+        float x = -xscale/((double)i);
+        float y1 = erfcf(x);
+        float y2 = fm_erfcf(x);
+        float y3 = (y1 != 0.0) ? fabsf((y2-y1)/y1): 0.0;
+
+        fprintf(fp,"%24.16g %24.16g %24.16g %24.16g\n",x,y1,y2,y3);
+    }
+    fputc('.',stdout);
+
+    /* second half >0 to +oo */
+    for (i=num; i > 0; --i) {
+        float x = xscale/((double)i);
+        float y1 = erfcf(x);
+        float y2 = fm_erfcf(x);
+        float y3 = (y1 != 0.0) ? fabsf((y2-y1)/y1): 0.0;
+
+        fprintf(fp,"%24.16g %24.16g %24.16g %24.16g\n",x,y1,y2,y3);
+    }
+    fputc('.',stdout);
+    fclose(fp);
+    fputc('.',stdout);
+    puts(" done");
 }
 
-/* 
+/*
  * Local Variables:
  * mode: c
  * compile-command: "make -C .."
  * c-basic-offset: 4
- * fill-column: 76 
- * indent-tabs-mode: nil 
- * End: 
+ * fill-column: 76
+ * indent-tabs-mode: nil
+ * End:
  */
