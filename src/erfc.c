@@ -657,13 +657,14 @@ static const float fm_erfcf_p[] __attribute__ ((aligned(_FM_ALIGN))) = {
 
 float fm_erfcf(float x)
 {
+
+    if (x > 9.27f) return 0.0f;
+    else if (x < -4.3f) return 2.0f;
+
     const float expm2 = my_expf(-x*x);
 
-    if (x < -6.1) return 2.0f;
-    if (x > 5e7) return  0.56418958354775628694807945156*expm2/x;
-
-    if (x >= 0) {
-        const float t = 1.0 / (1.0 + 0.3275911f*x);
+    if (x >= 0.0f) {
+        const float t = 1.0f / (1.0f + 0.3275911f*x);
 
         x = fm_erfcf_p[0];
         x = t*x + fm_erfcf_p[1];
@@ -672,14 +673,14 @@ float fm_erfcf(float x)
         x = t*x + fm_erfcf_p[4];
         return t*x*expm2;
     } else {
-        const float t = 1.0 / (1.0 - 0.3275911f*x);
+        const float t = 1.0f / (1.0f - 0.3275911f*x);
 
         x = fm_erfcf_p[0];
         x = t*x + fm_erfcf_p[1];
         x = t*x + fm_erfcf_p[2];
         x = t*x + fm_erfcf_p[3];
         x = t*x + fm_erfcf_p[4];
-        return 2.0 - t*x*expm2;
+        return 2.0f - t*x*expm2;
     }
 }
 
